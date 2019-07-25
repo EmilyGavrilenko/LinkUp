@@ -12,6 +12,7 @@
 		FE27061022E991A300CA7225 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FE27060E22E991A300CA7225 /* Main.storyboard */; };
 		FE27061222E991A400CA7225 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FE27061122E991A400CA7225 /* Assets.xcassets */; };
 		FE27061522E991A400CA7225 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FE27061322E991A400CA7225 /* LaunchScreen.storyboard */; };
+		FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27061D22E993C600CA7225 /* Extensions+UIView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		FE27061122E991A400CA7225 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FE27061422E991A400CA7225 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FE27061622E991A400CA7225 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FE27061D22E993C600CA7225 /* Extensions+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+UIView.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 		FE27060922E991A300CA7225 /* tinder-clone */ = {
 			isa = PBXGroup;
 			children = (
+				FE27061C22E9939700CA7225 /* Extensions */,
 				FE27060A22E991A300CA7225 /* AppDelegate.swift */,
 				FE27060C22E991A300CA7225 /* ViewController.swift */,
 				FE27060E22E991A300CA7225 /* Main.storyboard */,
@@ -62,6 +65,14 @@
 				FE27061622E991A400CA7225 /* Info.plist */,
 			);
 			path = "tinder-clone";
+			sourceTree = "<group>";
+		};
+		FE27061C22E9939700CA7225 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FE27061D22E993C600CA7225 /* Extensions+UIView.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +148,7 @@
 			files = (
 				FE27060D22E991A300CA7225 /* ViewController.swift in Sources */,
 				FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */,
+				FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
