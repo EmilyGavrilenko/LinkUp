@@ -13,6 +13,7 @@
 		FE27061222E991A400CA7225 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FE27061122E991A400CA7225 /* Assets.xcassets */; };
 		FE27061522E991A400CA7225 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FE27061322E991A400CA7225 /* LaunchScreen.storyboard */; };
 		FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27061D22E993C600CA7225 /* Extensions+UIView.swift */; };
+		FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27062022E9CC0D00CA7225 /* HomeBottomControlsStackView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		FE27061422E991A400CA7225 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FE27061622E991A400CA7225 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FE27061D22E993C600CA7225 /* Extensions+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+UIView.swift"; sourceTree = "<group>"; };
+		FE27062022E9CC0D00CA7225 /* HomeBottomControlsStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBottomControlsStackView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 		FE27060922E991A300CA7225 /* tinder-clone */ = {
 			isa = PBXGroup;
 			children = (
+				FE27061F22E9CBE500CA7225 /* Views */,
 				FE27061C22E9939700CA7225 /* Extensions */,
 				FE27060A22E991A300CA7225 /* AppDelegate.swift */,
 				FE27060C22E991A300CA7225 /* ViewController.swift */,
@@ -73,6 +76,14 @@
 				FE27061D22E993C600CA7225 /* Extensions+UIView.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		FE27061F22E9CBE500CA7225 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FE27062022E9CC0D00CA7225 /* HomeBottomControlsStackView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,6 +158,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FE27060D22E991A300CA7225 /* ViewController.swift in Sources */,
+				FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */,
 				FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */,
 				FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */,
 			);
@@ -297,13 +309,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SYTJT45T2T;
 				INFOPLIST_FILE = "tinder-clone/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.shelatkaryash.tinder-clone";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -315,13 +328,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SYTJT45T2T;
 				INFOPLIST_FILE = "tinder-clone/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.shelatkaryash.tinder-clone";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
