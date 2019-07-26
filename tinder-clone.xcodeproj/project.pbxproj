@@ -10,6 +10,7 @@
 		FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */; };
 		FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17D22EAFB77001E6471 /* CardView.swift */; };
 		FE14C18122EB18F4001E6471 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C18022EB18F4001E6471 /* User.swift */; };
+		FE14C18422EB22E5001E6471 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C18322EB22E5001E6471 /* CardViewModel.swift */; };
 		FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27060A22E991A300CA7225 /* AppDelegate.swift */; };
 		FE27060D22E991A300CA7225 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27060C22E991A300CA7225 /* HomeController.swift */; };
 		FE27061022E991A300CA7225 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FE27060E22E991A300CA7225 /* Main.storyboard */; };
@@ -23,6 +24,7 @@
 		FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavigationStackView.swift; sourceTree = "<group>"; };
 		FE14C17D22EAFB77001E6471 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		FE14C18022EB18F4001E6471 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		FE14C18322EB22E5001E6471 /* CardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 		FE27060722E991A300CA7225 /* tinder-clone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "tinder-clone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE27060A22E991A300CA7225 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FE27060C22E991A300CA7225 /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
@@ -53,6 +55,22 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		FE14C18222EB22B3001E6471 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				FE14C18322EB22E5001E6471 /* CardViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		FE14C18522EB22E9001E6471 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				FE27060C22E991A300CA7225 /* HomeController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		FE2705FE22E991A300CA7225 = {
 			isa = PBXGroup;
 			children = (
@@ -72,11 +90,12 @@
 		FE27060922E991A300CA7225 /* tinder-clone */ = {
 			isa = PBXGroup;
 			children = (
+				FE14C18522EB22E9001E6471 /* Controller */,
+				FE14C18222EB22B3001E6471 /* ViewModels */,
 				FE14C17F22EB18E6001E6471 /* Model */,
 				FE27061F22E9CBE500CA7225 /* Views */,
 				FE27061C22E9939700CA7225 /* Extensions */,
 				FE27060A22E991A300CA7225 /* AppDelegate.swift */,
-				FE27060C22E991A300CA7225 /* HomeController.swift */,
 				FE27060E22E991A300CA7225 /* Main.storyboard */,
 				FE27061122E991A400CA7225 /* Assets.xcassets */,
 				FE27061322E991A400CA7225 /* LaunchScreen.storyboard */,
@@ -178,6 +197,7 @@
 				FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */,
 				FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */,
 				FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */,
+				FE14C18422EB22E5001E6471 /* CardViewModel.swift in Sources */,
 				FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */,
 				FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */,
 				FE14C18122EB18F4001E6471 /* User.swift in Sources */,
