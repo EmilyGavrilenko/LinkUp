@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */; };
+		FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17D22EAFB77001E6471 /* CardView.swift */; };
 		FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27060A22E991A300CA7225 /* AppDelegate.swift */; };
 		FE27060D22E991A300CA7225 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27060C22E991A300CA7225 /* ViewController.swift */; };
 		FE27061022E991A300CA7225 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FE27060E22E991A300CA7225 /* Main.storyboard */; };
@@ -19,6 +20,7 @@
 
 /* Begin PBXFileReference section */
 		FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavigationStackView.swift; sourceTree = "<group>"; };
+		FE14C17D22EAFB77001E6471 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		FE27060722E991A300CA7225 /* tinder-clone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "tinder-clone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE27060A22E991A300CA7225 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FE27060C22E991A300CA7225 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 			children = (
 				FE27062022E9CC0D00CA7225 /* HomeBottomControlsStackView.swift */,
 				FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */,
+				FE14C17D22EAFB77001E6471 /* CardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 				FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */,
 				FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */,
 				FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */,
+				FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */,
 				FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

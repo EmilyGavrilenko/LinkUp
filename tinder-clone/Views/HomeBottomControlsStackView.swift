@@ -26,6 +26,8 @@ class HomeBottomControlsStackView: UIStackView {
             addArrangedSubview(v)
         }
         
+        isLayoutMarginsRelativeArrangement = true
+        layoutMargins = .init(top: 16, left: 0, bottom: 16, right: 0)
         
     }
     required init(coder: NSCoder) {
