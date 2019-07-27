@@ -13,9 +13,22 @@ class CardView: UIView {
     
     var cardViewModel: CardViewModel! {
         didSet {
-            imageView.image = UIImage(named: cardViewModel.imageName)
+            
+            // accessing index 0 will crash
+            let imageName = cardViewModel.imageNames.first ?? ""
+            
+            imageView.image = UIImage(named:imageName)
             informationLabel.attributedText = cardViewModel.attributedString
             informationLabel.textAlignment = cardViewModel.textAlignment
+            
+            (0..<cardViewModel.imageNames.count).forEach { (_) in
+                let barView = UIView()
+                barView.backgroundColor = UIColor(white: 0, alpha: 0.1)
+                
+                barsStackView.addArrangedSubview(barView)
+            }
+            
+            barsStackView.arrangedSubviews.first?.backgroundColor = .white
         }
     }
     
@@ -24,7 +37,7 @@ class CardView: UIView {
      fileprivate let imageView = UIImageView(image:#imageLiteral(resourceName: "lady5c"))
      fileprivate let informationLabel = UILabel()
      let gradientLayer = CAGradientLayer()
-    
+     fileprivate let barsStackView = UIStackView()
     // Configurations
     
     fileprivate let threshold: CGFloat = 100
@@ -49,6 +62,8 @@ class CardView: UIView {
         addSubview(imageView)
         imageView.fillSuperview()
     
+    setupBarsStackVIew()
+    
     // Add Gradiets Layer
         setupGradientLayer()
     
@@ -57,6 +72,22 @@ class CardView: UIView {
         informationLabel.numberOfLines = 0
         informationLabel.textColor = .white
     
+    }
+    
+    fileprivate func setupBarsStackVIew() {
+        addSubview(barsStackView)
+        barsStackView.anchor(top: topAnchor, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 8, left: 8, bottom: 0, right: 8), size: .init(width: 0, height: 4))
+        barsStackView.spacing = 4
+        barsStackView.distribution = .fillEqually
+//        (0..<4).forEach { (_) in
+//            let barView = UIView()
+//            barView.backgroundColor = UIColor(white: 0, alpha: 0.1)
+//
+//            barsStackView.addArrangedSubview(barView)
+//        }
+//
+//        barsStackView.arrangedSubviews.first?.backgroundColor = .white
+        
     }
     
     
