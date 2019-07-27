@@ -16,7 +16,6 @@ class HomeController: UIViewController {
     let cardViewModels: [CardViewModel] = {
         
         let producers = [
-        
         User(name: "Kelly", age: 23, profession: "Music DJ", imageName: "lady5c"),
         User(name: "Jane", age: 18, profession: "Teacher", imageName: "lady4c"),
         Advertiser(title: "Slide Out Menu", brandName: "Lets build that app", posterPhotoName: "slide_out_menu_poster")

@@ -23,7 +23,7 @@ class CardView: UIView {
     
      fileprivate let imageView = UIImageView(image:#imageLiteral(resourceName: "lady5c"))
      fileprivate let informationLabel = UILabel()
-    
+     let gradientLayer = CAGradientLayer()
     
     // Configurations
     
@@ -33,28 +33,57 @@ class CardView: UIView {
         super.init(frame: frame)
         
         // custom drawing code
-        layer.cornerRadius = 10
-        clipsToBounds = true
-        imageView.contentMode = .scaleAspectFill
-        addSubview(imageView)
-        imageView.fillSuperview()
+        setupLayout()
         
-        addSubview(informationLabel)
-       
-        informationLabel.anchor(top: nil, leading: self.leadingAnchor, bottom: self.bottomAnchor, trailing: self.trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
-        informationLabel.text = "Test Name Test Name"
-        informationLabel.numberOfLines = 0
-        informationLabel.textColor = .white
-        informationLabel.font = UIFont.systemFont(ofSize: 34, weight: .heavy)
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         addGestureRecognizer(panGesture)
         
     }
     
+   fileprivate func setupLayout(){
+    // custom drawing code
+        layer.cornerRadius = 10
+        clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        addSubview(imageView)
+        imageView.fillSuperview()
+    
+    // Add Gradiets Layer
+        setupGradientLayer()
+    
+        addSubview(informationLabel)
+        informationLabel.anchor(top: nil, leading: self.leadingAnchor, bottom: self.bottomAnchor, trailing: self.trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
+        informationLabel.numberOfLines = 0
+        informationLabel.textColor = .white
+    
+    }
+    
+    
+    
+    fileprivate func setupGradientLayer(){
+        // darw gradient
+       
+        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        gradientLayer.locations = [0.5,1.1]
+        
+        layer.addSublayer(gradientLayer)
+    }
+    
+    override func layoutSubviews() {
+        // in here you know what your cardview frame will be
+        
+        gradientLayer.frame = self.frame
+        
+    }
+    
     @objc fileprivate func handlePan(gesture: UIPanGestureRecognizer){
     
         switch gesture.state {
+        case .began:
+            superview?.subviews.forEach({ (subView) in
+                subView.layer.removeAllAnimations()
+            })
         case .changed:
             handleChanged(gesture)
         case .ended:
