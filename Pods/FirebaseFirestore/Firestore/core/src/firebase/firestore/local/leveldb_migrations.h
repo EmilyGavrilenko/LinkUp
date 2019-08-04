@@ -34,7 +34,7 @@ class LevelDbMigrations {
   /**
    * Returns the current version of the schema for the given database
    */
-  static SchemaVersion ReadSchemaVersion(leveldb::DB* db);
+  static SchemaVersion ReadSchemaVersion(LevelDbTransaction* transaction);
 
   /**
    * Runs any migrations needed to bring the given database up to the current

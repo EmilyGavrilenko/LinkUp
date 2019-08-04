@@ -15,12 +15,12 @@
 #include <sys/utsname.h>
 
 #import "FIRApp.h"
-#import "Private/FIRAnalyticsConfiguration.h"
+#import "FIRConfiguration.h"
+#import "Private/FIRAnalyticsConfiguration+Internal.h"
 #import "Private/FIRAppInternal.h"
 #import "Private/FIRBundleUtil.h"
 #import "Private/FIRComponentContainerInternal.h"
-#import "Private/FIRConfigurationInternal.h"
-#import "Private/FIRLibrary.h"
+#import "Private/FIRCoreConfigurable.h"
 #import "Private/FIRLogger.h"
 #import "Private/FIROptionsInternal.h"
 
@@ -81,9 +81,13 @@ static NSString *const kPlistURL = @"https://console.firebase.google.com/";
  * An array of all classes that registered as `FIRCoreConfigurable` in order to receive lifecycle
  * events from Core.
  */
-static NSMutableArray<Class<FIRLibrary>> *sRegisteredAsConfigurable;
+static NSMutableArray<Class<FIRCoreConfigurable>> *gRegisteredAsConfigurable;
 
 @interface FIRApp ()
+
+@property(nonatomic) BOOL alreadySentConfigureNotification;
+
+@property(nonatomic) BOOL alreadySentDeleteNotification;
 
 #ifdef DEBUG
 @property(nonatomic) BOOL alreadyOutputDataCollectionFlag;
@@ -103,26 +107,21 @@ static NSMutableDictionary *sLibraryVersions;
 + (void)configure {
   FIROptions *options = [FIROptions defaultOptions];
   if (!options) {
-    // Read the Info.plist to see if the flag is set. At this point we can't check any user defaults
-    // since the app isn't configured at all, so only rely on the Info.plist value.
-    NSNumber *collectionEnabledPlistValue = [[self class] readDataCollectionSwitchFromPlist];
-    if (collectionEnabledPlistValue == nil || [collectionEnabledPlistValue boolValue]) {
-      [[NSNotificationCenter defaultCenter]
-          postNotificationName:kFIRAppDiagnosticsNotification
-                        object:nil
-                      userInfo:@{
-                        kFIRAppDiagnosticsConfigurationTypeKey : @(FIRConfigTypeCore),
-                        kFIRAppDiagnosticsErrorKey : [FIRApp errorForMissingOptions]
-                      }];
-    }
-
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kFIRAppDiagnosticsNotification
+                      object:nil
+                    userInfo:@{
+                      kFIRAppDiagnosticsConfigurationTypeKey : @(FIRConfigTypeCore),
+                      kFIRAppDiagnosticsErrorKey : [FIRApp errorForMissingOptions]
+                    }];
     [NSException raise:kFirebaseCoreErrorDomain
-                format:@"`[FIRApp configure];` (`FirebaseApp.configure()` in Swift) could not find "
-                       @"a valid GoogleService-Info.plist in your project. Please download one "
-                       @"from %@.",
-                       kPlistURL];
+                format:
+                    @"`[FIRApp configure];` (`FirebaseApp.configure()` in Swift) could not find "
+                    @"a valid GoogleService-Info.plist in your project. Please download one "
+                    @"from %@.",
+                    kPlistURL];
   }
-  [FIRApp configureWithOptions:options];
+  [FIRApp configureDefaultAppWithOptions:options sendingNotifications:YES];
 #if TARGET_OS_OSX || TARGET_OS_TV
   FIRLogNotice(kFIRLoggerCore, @"I-COR000028",
                @"tvOS and macOS SDK support is not part of the official Firebase product. "
@@ -136,18 +135,29 @@ static NSMutableDictionary *sLibraryVersions;
     [NSException raise:kFirebaseCoreErrorDomain
                 format:@"Options is nil. Please pass a valid options."];
   }
-  [FIRApp configureWithName:kFIRDefaultAppName options:options];
+  [FIRApp configureDefaultAppWithOptions:options sendingNotifications:YES];
 }
 
-+ (NSCharacterSet *)applicationNameAllowedCharacters {
-  static NSCharacterSet *applicationNameAllowedCharacters;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    NSMutableCharacterSet *allowedNameCharacters = [NSMutableCharacterSet alphanumericCharacterSet];
-    [allowedNameCharacters addCharactersInString:@"-_"];
-    applicationNameAllowedCharacters = [allowedNameCharacters copy];
-  });
-  return applicationNameAllowedCharacters;
++ (void)configureDefaultAppWithOptions:(FIROptions *)options
+                  sendingNotifications:(BOOL)sendNotifications {
+  if (sDefaultApp) {
+    // FIRApp sets up FirebaseAnalytics and does plist validation, but does not cause it
+    // to fire notifications. So, if the default app already exists, but has not sent out
+    // configuration notifications, then continue re-initializing it.
+    if (!sendNotifications || sDefaultApp.alreadySentConfigureNotification) {
+      [NSException raise:kFirebaseCoreErrorDomain
+                  format:@"Default app has already been configured."];
+    }
+  }
+  @synchronized(self) {
+    FIRLogDebug(kFIRLoggerCore, @"I-COR000001", @"Configuring the default app.");
+    sDefaultApp = [[FIRApp alloc] initInstanceWithName:kFIRDefaultAppName options:options];
+    [FIRApp addAppToAppDictionary:sDefaultApp];
+    if (!sDefaultApp.alreadySentConfigureNotification && sendNotifications) {
+      [FIRApp sendNotificationsToSDKs:sDefaultApp];
+      sDefaultApp.alreadySentConfigureNotification = YES;
+    }
+  }
 }
 
 + (void)configureWithName:(NSString *)name options:(FIROptions *)options {
@@ -157,42 +167,33 @@ static NSMutableDictionary *sLibraryVersions;
   if (name.length == 0) {
     [NSException raise:kFirebaseCoreErrorDomain format:@"Name cannot be empty."];
   }
-
   if ([name isEqualToString:kFIRDefaultAppName]) {
-    if (sDefaultApp) {
+    [NSException raise:kFirebaseCoreErrorDomain format:@"Name cannot be __FIRAPP_DEFAULT."];
+  }
+  for (NSUInteger charIndex = 0; charIndex < name.length; charIndex++) {
+    char character = [name characterAtIndex:charIndex];
+    if (!((character >= 'a' && character <= 'z') || (character >= 'A' && character <= 'Z') ||
+          (character >= '0' && character <= '9') || character == '_' || character == '-')) {
       [NSException raise:kFirebaseCoreErrorDomain
-                  format:@"Default app has already been configured."];
+                  format:
+                      @"App name should only contain Letters, "
+                      @"Numbers, Underscores, and Dashes."];
     }
+  }
 
-    FIRLogDebug(kFIRLoggerCore, @"I-COR000001", @"Configuring the default app.");
-  } else {
-    // Validate the app name and ensure it hasn't been configured already.
-    NSCharacterSet *nameCharacters = [NSCharacterSet characterSetWithCharactersInString:name];
-
-    if (![[self applicationNameAllowedCharacters] isSupersetOfSet:nameCharacters]) {
-      [NSException raise:kFirebaseCoreErrorDomain
-                  format:@"App name can only contain alphanumeric, "
-                         @"hyphen (-), and underscore (_) characters"];
-    }
-
-    @synchronized(self) {
-      if (sAllApps && sAllApps[name]) {
-        [NSException raise:kFirebaseCoreErrorDomain
-                    format:@"App named %@ has already been configured.", name];
-      }
-    }
-
-    FIRLogDebug(kFIRLoggerCore, @"I-COR000002", @"Configuring app named %@", name);
+  if (sAllApps && sAllApps[name]) {
+    [NSException raise:kFirebaseCoreErrorDomain
+                format:@"App named %@ has already been configured.", name];
   }
 
   @synchronized(self) {
+    FIRLogDebug(kFIRLoggerCore, @"I-COR000002", @"Configuring app named %@", name);
     FIRApp *app = [[FIRApp alloc] initInstanceWithName:name options:options];
-    if (app.isDefaultApp) {
-      sDefaultApp = app;
-    }
-
     [FIRApp addAppToAppDictionary:app];
-    [FIRApp sendNotificationsToSDKs:app];
+    if (!app.alreadySentConfigureNotification) {
+      [FIRApp sendNotificationsToSDKs:app];
+      app.alreadySentConfigureNotification = YES;
+    }
   }
 }
 
@@ -225,19 +226,18 @@ static NSMutableDictionary *sLibraryVersions;
     if (!sAllApps) {
       FIRLogError(kFIRLoggerCore, @"I-COR000005", @"No app has been configured yet.");
     }
-    return [sAllApps copy];
+    NSDictionary *dict = [NSDictionary dictionaryWithDictionary:sAllApps];
+    return dict;
   }
 }
 
 // Public only for tests
 + (void)resetApps {
-  @synchronized(self) {
-    sDefaultApp = nil;
-    [sAllApps removeAllObjects];
-    sAllApps = nil;
-    [sLibraryVersions removeAllObjects];
-    sLibraryVersions = nil;
-  }
+  sDefaultApp = nil;
+  [sAllApps removeAllObjects];
+  sAllApps = nil;
+  [sLibraryVersions removeAllObjects];
+  sLibraryVersions = nil;
 }
 
 - (void)deleteApp:(FIRAppVoidBoolCallback)completion {
@@ -253,10 +253,13 @@ static NSMutableDictionary *sLibraryVersions;
       if ([self.name isEqualToString:kFIRDefaultAppName]) {
         sDefaultApp = nil;
       }
-      NSDictionary *appInfoDict = @{kFIRAppNameKey : self.name};
-      [[NSNotificationCenter defaultCenter] postNotificationName:kFIRAppDeleteNotification
-                                                          object:[self class]
-                                                        userInfo:appInfoDict];
+      if (!self.alreadySentDeleteNotification) {
+        NSDictionary *appInfoDict = @{kFIRAppNameKey : self.name};
+        [[NSNotificationCenter defaultCenter] postNotificationName:kFIRAppDeleteNotification
+                                                            object:[self class]
+                                                          userInfo:appInfoDict];
+        self.alreadySentDeleteNotification = YES;
+      }
       completion(YES);
     } else {
       FIRLogError(kFIRLoggerCore, @"I-COR000007", @"App does not exist.");
@@ -271,10 +274,18 @@ static NSMutableDictionary *sLibraryVersions;
   }
   if ([app configureCore]) {
     sAllApps[app.name] = app;
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kFIRAppDiagnosticsNotification
+                      object:nil
+                    userInfo:@{
+                      kFIRAppDiagnosticsConfigurationTypeKey : @(FIRConfigTypeCore),
+                      kFIRAppDiagnosticsFIRAppKey : app
+                    }];
   } else {
     [NSException raise:kFirebaseCoreErrorDomain
-                format:@"Configuration fails. It may be caused by an invalid GOOGLE_APP_ID in "
-                       @"GoogleService-Info.plist or set in the customized options."];
+                format:
+                    @"Configuration fails. It may be caused by an invalid GOOGLE_APP_ID in "
+                    @"GoogleService-Info.plist or set in the customized options."];
   }
 }
 
@@ -286,14 +297,27 @@ static NSMutableDictionary *sLibraryVersions;
     _options.editingLocked = YES;
     _isDefaultApp = [name isEqualToString:kFIRDefaultAppName];
     _container = [[FIRComponentContainer alloc] initWithApp:self];
+
+    FIRApp *app = sAllApps[name];
+    _alreadySentConfigureNotification = app.alreadySentConfigureNotification;
+    _alreadySentDeleteNotification = app.alreadySentDeleteNotification;
   }
   return self;
+}
+
+- (void)getTokenForcingRefresh:(BOOL)forceRefresh withCallback:(FIRTokenCallback)callback {
+  if (!_getTokenImplementation) {
+    callback(nil, nil);
+    return;
+  }
+
+  _getTokenImplementation(forceRefresh, callback);
 }
 
 - (BOOL)configureCore {
   [self checkExpectedBundleID];
   if (![self isAppIDValid]) {
-    if (_options.usingOptionsFromDefaultPlist && [self isDataCollectionDefaultEnabled]) {
+    if (_options.usingOptionsFromDefaultPlist) {
       [[NSNotificationCenter defaultCenter]
           postNotificationName:kFIRAppDiagnosticsNotification
                         object:nil
@@ -305,22 +329,16 @@ static NSMutableDictionary *sLibraryVersions;
     return NO;
   }
 
-  if ([self isDataCollectionDefaultEnabled]) {
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:kFIRAppDiagnosticsNotification
-                      object:nil
-                    userInfo:@{
-                      kFIRAppDiagnosticsConfigurationTypeKey : @(FIRConfigTypeCore),
-                      kFIRAppDiagnosticsFIRAppKey : self
-                    }];
-  }
-
 #if TARGET_OS_IOS
   // Initialize the Analytics once there is a valid options under default app. Analytics should
   // always initialize first by itself before the other SDKs.
   if ([self.name isEqualToString:kFIRDefaultAppName]) {
     Class firAnalyticsClass = NSClassFromString(@"FIRAnalytics");
-    if (firAnalyticsClass) {
+    if (!firAnalyticsClass) {
+      FIRLogWarning(kFIRLoggerCore, @"I-COR000022",
+                    @"Firebase Analytics is not available. To add it, include Firebase/Core in the "
+                    @"Podfile or add FirebaseAnalytics.framework to the Link Build Phase");
+    } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
       SEL startWithConfigurationSelector = @selector(startWithConfiguration:options:);
@@ -328,7 +346,6 @@ static NSMutableDictionary *sLibraryVersions;
       if ([firAnalyticsClass respondsToSelector:startWithConfigurationSelector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [firAnalyticsClass performSelector:startWithConfigurationSelector
                                 withObject:[FIRConfiguration sharedInstance].analyticsConfiguration
                                 withObject:_options];
@@ -359,7 +376,7 @@ static NSMutableDictionary *sLibraryVersions;
   // Core also controls the FirebaseAnalytics flag, so check if the Analytics flags are set
   // within FIROptions and change the Analytics value if necessary. Analytics only works with the
   // default app, so return if this isn't the default app.
-  if (!self.isDefaultApp) {
+  if (self != sDefaultApp) {
     return;
   }
 
@@ -369,12 +386,9 @@ static NSMutableDictionary *sLibraryVersions;
   }
 
   // The Analytics flag has not been explicitly set, so update with the value being set.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [[FIRAnalyticsConfiguration sharedInstance]
       setAnalyticsCollectionEnabled:dataCollectionDefaultEnabled
                      persistSetting:NO];
-#pragma clang diagnostic pop
 }
 
 - (BOOL)isDataCollectionDefaultEnabled {
@@ -419,7 +433,7 @@ static NSMutableDictionary *sLibraryVersions;
 
 + (void)sendNotificationsToSDKs:(FIRApp *)app {
   // TODO: Remove this notification once all SDKs are registered with `FIRCoreConfigurable`.
-  NSNumber *isDefaultApp = [NSNumber numberWithBool:app.isDefaultApp];
+  NSNumber *isDefaultApp = [NSNumber numberWithBool:(app == sDefaultApp)];
   NSDictionary *appInfoDict = @{
     kFIRAppNameKey : app.name,
     kFIRAppIsDefaultAppKey : isDefaultApp,
@@ -431,10 +445,8 @@ static NSMutableDictionary *sLibraryVersions;
 
   // This is the new way of sending information to SDKs.
   // TODO: Do we want this on a background thread, maybe?
-  @synchronized(self) {
-    for (Class<FIRLibrary> library in sRegisteredAsConfigurable) {
-      [library configureWithApp:app];
-    }
+  for (Class<FIRCoreConfigurable> library in gRegisteredAsConfigurable) {
+    [library configureWithApp:app];
   }
 }
 
@@ -473,71 +485,52 @@ static NSMutableDictionary *sLibraryVersions;
                          userInfo:errorDict];
 }
 
++ (void)registerAsConfigurable:(Class<FIRCoreConfigurable>)klass {
+  // This is called at +load time, keep the work to a minimum.
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    gRegisteredAsConfigurable = [[NSMutableArray alloc] initWithCapacity:1];
+  });
+
+  NSAssert([(Class)klass conformsToProtocol:@protocol(FIRCoreConfigurable)],
+           @"The class being registered (%@) must conform to `FIRCoreConfigurable`.", klass);
+  [gRegisteredAsConfigurable addObject:klass];
+}
+
 + (BOOL)isDefaultAppConfigured {
   return (sDefaultApp != nil);
 }
 
-+ (void)registerLibrary:(nonnull NSString *)name withVersion:(nonnull NSString *)version {
++ (void)registerLibrary:(nonnull NSString *)library withVersion:(nonnull NSString *)version {
   // Create the set of characters which aren't allowed, only if this feature is used.
   NSMutableCharacterSet *allowedSet = [NSMutableCharacterSet alphanumericCharacterSet];
   [allowedSet addCharactersInString:@"-_."];
   NSCharacterSet *disallowedSet = [allowedSet invertedSet];
   // Make sure the library name and version strings do not contain unexpected characters, and
   // add the name/version pair to the dictionary.
-  if ([name rangeOfCharacterFromSet:disallowedSet].location == NSNotFound &&
+  if ([library rangeOfCharacterFromSet:disallowedSet].location == NSNotFound &&
       [version rangeOfCharacterFromSet:disallowedSet].location == NSNotFound) {
-    @synchronized(self) {
-      if (!sLibraryVersions) {
-        sLibraryVersions = [[NSMutableDictionary alloc] init];
-      }
-      sLibraryVersions[name] = version;
+    if (!sLibraryVersions) {
+      sLibraryVersions = [[NSMutableDictionary alloc] init];
     }
+    sLibraryVersions[library] = version;
   } else {
     FIRLogError(kFIRLoggerCore, @"I-COR000027",
-                @"The library name (%@) or version number (%@) contain invalid characters. "
+                @"The library name (%@) or version number (%@) contain illegal characters. "
                 @"Only alphanumeric, dash, underscore and period characters are allowed.",
-                name, version);
+                library, version);
   }
-}
-
-+ (void)registerInternalLibrary:(nonnull Class<FIRLibrary>)library
-                       withName:(nonnull NSString *)name
-                    withVersion:(nonnull NSString *)version {
-  // This is called at +load time, keep the work to a minimum.
-
-  // Ensure the class given conforms to the proper protocol.
-  if (![(Class)library conformsToProtocol:@protocol(FIRLibrary)] ||
-      ![(Class)library respondsToSelector:@selector(componentsToRegister)]) {
-    [NSException raise:NSInvalidArgumentException
-                format:@"Class %@ attempted to register components, but it does not conform to "
-                       @"`FIRLibrary or provide a `componentsToRegister:` method.",
-                       library];
-  }
-
-  [FIRComponentContainer registerAsComponentRegistrant:library];
-  if ([(Class)library respondsToSelector:@selector(configureWithApp:)]) {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      sRegisteredAsConfigurable = [[NSMutableArray alloc] init];
-    });
-    @synchronized(self) {
-      [sRegisteredAsConfigurable addObject:library];
-    }
-  }
-  [self registerLibrary:name withVersion:version];
 }
 
 + (NSString *)firebaseUserAgent {
-  @synchronized(self) {
-    NSMutableArray<NSString *> *libraries =
-        [[NSMutableArray<NSString *> alloc] initWithCapacity:sLibraryVersions.count];
-    for (NSString *libraryName in sLibraryVersions) {
-      [libraries addObject:[NSString stringWithFormat:@"%@/%@", libraryName,
-                                                      sLibraryVersions[libraryName]]];
-    }
-    [libraries sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
-    return [libraries componentsJoinedByString:@" "];
+  NSMutableArray<NSString *> *libraries =
+      [[NSMutableArray<NSString *> alloc] initWithCapacity:sLibraryVersions.count];
+  for (NSString *libraryName in sLibraryVersions) {
+    [libraries
+        addObject:[NSString stringWithFormat:@"%@/%@", libraryName, sLibraryVersions[libraryName]]];
   }
+  [libraries sortUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+  return [libraries componentsJoinedByString:@" "];
 }
 
 - (void)checkExpectedBundleID {
@@ -545,8 +538,8 @@ static NSMutableDictionary *sLibraryVersions;
   NSString *expectedBundleID = [self expectedBundleID];
   // The checking is only done when the bundle ID is provided in the serviceInfo dictionary for
   // backward compatibility.
-  if (expectedBundleID != nil && ![FIRBundleUtil hasBundleIdentifierPrefix:expectedBundleID
-                                                                 inBundles:bundles]) {
+  if (expectedBundleID != nil &&
+      ![FIRBundleUtil hasBundleIdentifier:expectedBundleID inBundles:bundles]) {
     FIRLogError(kFIRLoggerCore, @"I-COR000008",
                 @"The project's Bundle ID is inconsistent with "
                 @"either the Bundle ID in '%@.%@', or the Bundle ID in the options if you are "
@@ -557,6 +550,15 @@ static NSMutableDictionary *sLibraryVersions;
                 @"and replace the current one.",
                 kServiceInfoFileName, kServiceInfoFileType, expectedBundleID, kPlistURL);
   }
+}
+
+// TODO: Remove once SDKs transition to Auth interop library.
+- (nullable NSString *)getUID {
+  if (!_getUIDImplementation) {
+    FIRLogWarning(kFIRLoggerCore, @"I-COR000025", @"FIRAuth getUID implementation wasn't set.");
+    return nil;
+  }
+  return _getUIDImplementation();
 }
 
 #pragma mark - private - App ID Validation
@@ -591,32 +593,33 @@ static NSMutableDictionary *sLibraryVersions;
     return NO;
   }
 
-  NSScanner *stringScanner = [NSScanner scannerWithString:appID];
-  stringScanner.charactersToBeSkipped = nil;
-
-  NSString *appIDVersion;
-  if (![stringScanner scanCharactersFromSet:[NSCharacterSet decimalDigitCharacterSet]
-                                 intoString:&appIDVersion]) {
+  // All app IDs must start with at least "<version number>:".
+  NSString *const versionPattern = @"^\\d+:";
+  NSRegularExpression *versionRegex =
+      [NSRegularExpression regularExpressionWithPattern:versionPattern options:0 error:NULL];
+  if (!versionRegex) {
     return NO;
   }
 
-  if (![stringScanner scanString:@":" intoString:NULL]) {
-    // appIDVersion must be separated by ":"
+  NSRange appIDRange = NSMakeRange(0, appID.length);
+  NSArray *versionMatches = [versionRegex matchesInString:appID options:0 range:appIDRange];
+  if (versionMatches.count != 1) {
     return NO;
   }
 
-  NSArray *knownVersions = @[ @"1" ];
+  NSRange versionRange = [(NSTextCheckingResult *)versionMatches.firstObject range];
+  NSString *appIDVersion = [appID substringWithRange:versionRange];
+  NSArray *knownVersions = @[ @"1:" ];
   if (![knownVersions containsObject:appIDVersion]) {
     // Permit unknown yet properly formatted app ID versions.
-    FIRLogInfo(kFIRLoggerCore, @"I-COR000010", @"Unknown GOOGLE_APP_ID version: %@", appIDVersion);
     return YES;
   }
 
-  if (![self validateAppIDFormat:appID withVersion:appIDVersion]) {
+  if (![FIRApp validateAppIDFormat:appID withVersion:appIDVersion]) {
     return NO;
   }
 
-  if (![self validateAppIDFingerprint:appID withVersion:appIDVersion]) {
+  if (![FIRApp validateAppIDFingerprint:appID withVersion:appIDVersion]) {
     return NO;
   }
 
@@ -646,76 +649,32 @@ static NSMutableDictionary *sLibraryVersions;
     return NO;
   }
 
-  NSScanner *stringScanner = [NSScanner scannerWithString:appID];
-  stringScanner.charactersToBeSkipped = nil;
-
-  // Skip version part
-  // '*<version #>*:<project number>:ios:<fingerprint of bundle id>'
-  if (![stringScanner scanString:version intoString:NULL]) {
-    // The version part is missing or mismatched
+  if (![version hasSuffix:@":"]) {
     return NO;
   }
 
-  // Validate version part (see part between '*' symbols below)
-  // '<version #>*:*<project number>:ios:<fingerprint of bundle id>'
-  if (![stringScanner scanString:@":" intoString:NULL]) {
-    // appIDVersion must be separated by ":"
+  if (![appID hasPrefix:version]) {
     return NO;
   }
 
-  // Validate version part (see part between '*' symbols below)
-  // '<version #>:*<project number>*:ios:<fingerprint of bundle id>'.
-  NSInteger projectNumber = NSNotFound;
-  if (![stringScanner scanInteger:&projectNumber]) {
-    // NO project number found.
+  NSString *const pattern = @"^\\d+:ios:[a-f0-9]+$";
+  NSRegularExpression *regex =
+      [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:NULL];
+  if (!regex) {
     return NO;
   }
 
-  // Validate version part (see part between '*' symbols below)
-  // '<version #>:<project number>*:*ios:<fingerprint of bundle id>'.
-  if (![stringScanner scanString:@":" intoString:NULL]) {
-    // The project number must be separated by ":"
+  NSRange localRange = NSMakeRange(version.length, appID.length - version.length);
+  NSUInteger numberOfMatches = [regex numberOfMatchesInString:appID options:0 range:localRange];
+  if (numberOfMatches != 1) {
     return NO;
   }
-
-  // Validate version part (see part between '*' symbols below)
-  // '<version #>:<project number>:*ios*:<fingerprint of bundle id>'.
-  NSString *platform;
-  if (![stringScanner scanUpToString:@":" intoString:&platform]) {
-    return NO;
-  }
-
-  if (![platform isEqualToString:@"ios"]) {
-    // The platform must be @"ios"
-    return NO;
-  }
-
-  // Validate version part (see part between '*' symbols below)
-  // '<version #>:<project number>:ios*:*<fingerprint of bundle id>'.
-  if (![stringScanner scanString:@":" intoString:NULL]) {
-    // The platform must be separated by ":"
-    return NO;
-  }
-
-  // Validate version part (see part between '*' symbols below)
-  // '<version #>:<project number>:ios:*<fingerprint of bundle id>*'.
-  unsigned long long fingerprint = NSNotFound;
-  if (![stringScanner scanHexLongLong:&fingerprint]) {
-    // Fingerprint part is missing
-    return NO;
-  }
-
-  if (!stringScanner.isAtEnd) {
-    // There are not allowed characters in the fingerprint part
-    return NO;
-  }
-
   return YES;
 }
 
 /**
  * Validates that the fingerprint of the app ID string is what is expected based on the supplied
- * version.
+ * version. The version must end in ":".
  *
  * Note that the v1 hash algorithm is not permitted on the client and cannot be fully validated.
  *
@@ -725,6 +684,18 @@ static NSMutableDictionary *sLibraryVersions;
  *         otherwise.
  */
 + (BOOL)validateAppIDFingerprint:(NSString *)appID withVersion:(NSString *)version {
+  if (!appID.length || !version.length) {
+    return NO;
+  }
+
+  if (![version hasSuffix:@":"]) {
+    return NO;
+  }
+
+  if (![appID hasPrefix:version]) {
+    return NO;
+  }
+
   // Extract the supplied fingerprint from the supplied app ID.
   // This assumes the app ID format is the same for all known versions below. If the app ID format
   // changes in future versions, the tokenizing of the app ID format will need to take into account
@@ -745,7 +716,7 @@ static NSMutableDictionary *sLibraryVersions;
     return NO;
   }
 
-  if ([version isEqual:@"1"]) {
+  if ([version isEqual:@"1:"]) {
     // The v1 hash algorithm is not permitted on the client so the actual hash cannot be validated.
     return YES;
   }

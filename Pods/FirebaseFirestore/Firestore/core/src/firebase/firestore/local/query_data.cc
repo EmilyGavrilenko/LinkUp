@@ -24,17 +24,14 @@ namespace local {
 
 using core::Query;
 using model::SnapshotVersion;
-using nanopb::ByteString;
 
 QueryData::QueryData(Query&& query,
                      model::TargetId target_id,
-                     model::ListenSequenceNumber sequence_number,
                      QueryPurpose purpose,
                      SnapshotVersion&& snapshot_version,
-                     ByteString&& resume_token)
+                     std::vector<uint8_t>&& resume_token)
     : query_(std::move(query)),
       target_id_(target_id),
-      sequence_number_(sequence_number),
       purpose_(purpose),
       snapshot_version_(std::move(snapshot_version)),
       resume_token_(std::move(resume_token)) {
@@ -52,14 +49,13 @@ QueryData::QueryData(const Query& query, int target_id, QueryPurpose purpose)
 */
 
 QueryData QueryData::Invalid() {
-  return QueryData(Query::Invalid(), /*target_id=*/-1, /*sequence_number=*/-1,
-                   QueryPurpose::kListen,
+  return QueryData(Query::Invalid(), /*target_id=*/-1, QueryPurpose::kListen,
                    SnapshotVersion(SnapshotVersion::None()), {});
 }
 
 QueryData QueryData::Copy(SnapshotVersion&& snapshot_version,
-                          ByteString&& resume_token) const {
-  return QueryData(Query(query_), target_id_, sequence_number_, purpose_,
+                          std::vector<uint8_t>&& resume_token) const {
+  return QueryData(Query(query_), target_id_, purpose_,
                    std::move(snapshot_version), std::move(resume_token));
 }
 

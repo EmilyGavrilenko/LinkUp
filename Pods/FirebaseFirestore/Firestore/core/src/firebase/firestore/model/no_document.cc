@@ -22,11 +22,8 @@ namespace firebase {
 namespace firestore {
 namespace model {
 
-NoDocument::NoDocument(DocumentKey key,
-                       SnapshotVersion version,
-                       bool has_committed_mutations)
-    : MaybeDocument(std::move(key), std::move(version)),
-      has_committed_mutations_(has_committed_mutations) {
+NoDocument::NoDocument(DocumentKey key, SnapshotVersion version)
+    : MaybeDocument(std::move(key), std::move(version)) {
   set_type(Type::NoDocument);
 }
 

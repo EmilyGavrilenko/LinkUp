@@ -29,14 +29,12 @@
 
 @class GPBTimestamp;
 
-namespace model = firebase::firestore::model;
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Serializer for values stored in the LocalStore.
  *
- * Note that FSTLocalSerializer currently delegates to the serializer for the Firestore v1 RPC
+ * Note that FSTLocalSerializer currently delegates to the serializer for the Firestore v1beta1 RPC
  * protocol to save implementation time and code duplication. We'll need to revisit this when the
  * RPC protocol we use diverges from local storage.
  */
@@ -65,10 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (FSTQueryData *)decodedQueryData:(FSTPBTarget *)target;
 
 /** Encodes a SnapshotVersion model into a GPBTimestamp proto. */
-- (GPBTimestamp *)encodedVersion:(const model::SnapshotVersion &)version;
+- (GPBTimestamp *)encodedVersion:(const firebase::firestore::model::SnapshotVersion &)version;
 
 /** Decodes a GPBTimestamp proto into a SnapshotVersion model. */
-- (model::SnapshotVersion)decodedVersion:(GPBTimestamp *)version;
+- (firebase::firestore::model::SnapshotVersion)decodedVersion:(GPBTimestamp *)version;
 
 @end
 

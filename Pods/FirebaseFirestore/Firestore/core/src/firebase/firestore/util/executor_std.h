@@ -200,6 +200,8 @@ class Schedule {
 
 }  // namespace async
 
+namespace internal {
+
 // A serial queue that executes provided operations on a dedicated background
 // thread, using C++11 standard library functionality.
 class ExecutorStd : public Executor {
@@ -272,6 +274,7 @@ class ExecutorStd : public Executor {
   std::atomic<Id> current_id_{0};
 };
 
+}  // namespace internal
 }  // namespace util
 }  // namespace firestore
 }  // namespace firebase

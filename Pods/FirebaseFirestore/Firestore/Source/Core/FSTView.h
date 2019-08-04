@@ -16,28 +16,18 @@
 
 #import <Foundation/Foundation.h>
 
-#include "Firestore/core/src/firebase/firestore/core/view_snapshot.h"
+#import "Firestore/Source/Model/FSTDocumentDictionary.h"
+
 #include "Firestore/core/src/firebase/firestore/model/document_key.h"
 #include "Firestore/core/src/firebase/firestore/model/document_key_set.h"
-#include "Firestore/core/src/firebase/firestore/model/document_map.h"
 #include "Firestore/core/src/firebase/firestore/model/types.h"
-#include "absl/types/optional.h"
 
+@class FSTDocumentSet;
+@class FSTDocumentViewChangeSet;
+@class FSTMaybeDocument;
 @class FSTQuery;
-
-namespace firebase {
-namespace firestore {
-namespace remote {
-
-class TargetChange;
-
-}  // namespace remote
-}  // namespace firestore
-}  // namespace firebase
-
-namespace core = firebase::firestore::core;
-namespace model = firebase::firestore::model;
-namespace remote = firebase::firestore::remote;
+@class FSTTargetChange;
+@class FSTViewSnapshot;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,13 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (const model::DocumentKeySet &)mutatedKeys;
+- (const firebase::firestore::model::DocumentKeySet &)mutatedKeys;
 
 /** The new set of docs that should be in the view. */
-- (const model::DocumentSet &)documentSet;
+@property(nonatomic, strong, readonly) FSTDocumentSet *documentSet;
 
 /** The diff of this these docs with the previous set of docs. */
-- (const core::DocumentViewChangeSet &)changeSet;
+@property(nonatomic, strong, readonly) FSTDocumentViewChangeSet *changeSet;
 
 /**
  * Whether the set of documents passed in was not sufficient to calculate the new state of the view
@@ -74,11 +64,12 @@ typedef NS_ENUM(NSInteger, FSTLimboDocumentChangeType) {
 // A change to a particular document wrt to whether it is in "limbo".
 @interface FSTLimboDocumentChange : NSObject
 
-+ (instancetype)changeWithType:(FSTLimboDocumentChangeType)type key:(model::DocumentKey)key;
++ (instancetype)changeWithType:(FSTLimboDocumentChangeType)type
+                           key:(firebase::firestore::model::DocumentKey)key;
 
 - (id)init __attribute__((unavailable("Use a static constructor method.")));
 
-- (const model::DocumentKey &)key;
+- (const firebase::firestore::model::DocumentKey &)key;
 
 @property(nonatomic, assign, readonly) FSTLimboDocumentChangeType type;
 @end
@@ -90,7 +81,7 @@ typedef NS_ENUM(NSInteger, FSTLimboDocumentChangeType) {
 
 - (id)init __attribute__((unavailable("Use a static constructor method.")));
 
-- (absl::optional<core::ViewSnapshot> &)snapshot;
+@property(nonatomic, strong, readonly, nullable) FSTViewSnapshot *snapshot;
 @property(nonatomic, strong, readonly) NSArray<FSTLimboDocumentChange *> *limboChanges;
 @end
 
@@ -106,7 +97,8 @@ typedef NS_ENUM(NSInteger, FSTLimboDocumentChangeType) {
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithQuery:(FSTQuery *)query
-              remoteDocuments:(model::DocumentKeySet)remoteDocuments NS_DESIGNATED_INITIALIZER;
+              remoteDocuments:(firebase::firestore::model::DocumentKeySet)remoteDocuments
+    NS_DESIGNATED_INITIALIZER;
 
 /**
  * Iterates over a set of doc changes, applies the query limit, and computes what the new results
@@ -116,7 +108,7 @@ typedef NS_ENUM(NSInteger, FSTLimboDocumentChangeType) {
  * @param docChanges The doc changes to apply to this view.
  * @return a new set of docs, changes, and refill flag.
  */
-- (FSTViewDocumentChanges *)computeChangesWithDocuments:(const model::MaybeDocumentMap &)docChanges;
+- (FSTViewDocumentChanges *)computeChangesWithDocuments:(FSTMaybeDocumentDictionary *)docChanges;
 
 /**
  * Iterates over a set of doc changes, applies the query limit, and computes what the new results
@@ -128,7 +120,7 @@ typedef NS_ENUM(NSInteger, FSTLimboDocumentChangeType) {
  *     and changes instead of the current view.
  * @return a new set of docs, changes, and refill flag.
  */
-- (FSTViewDocumentChanges *)computeChangesWithDocuments:(const model::MaybeDocumentMap &)docChanges
+- (FSTViewDocumentChanges *)computeChangesWithDocuments:(FSTMaybeDocumentDictionary *)docChanges
                                         previousChanges:
                                             (nullable FSTViewDocumentChanges *)previousChanges;
 
@@ -149,20 +141,19 @@ typedef NS_ENUM(NSInteger, FSTLimboDocumentChangeType) {
  * @return A new FSTViewChange with the given docs, changes, and sync state.
  */
 - (FSTViewChange *)applyChangesToDocuments:(FSTViewDocumentChanges *)docChanges
-                              targetChange:
-                                  (const absl::optional<remote::TargetChange> &)targetChange;
+                              targetChange:(nullable FSTTargetChange *)targetChange;
 
 /**
  * Applies an OnlineState change to the view, potentially generating an FSTViewChange if the
  * view's syncState changes as a result.
  */
-- (FSTViewChange *)applyChangedOnlineState:(model::OnlineState)onlineState;
+- (FSTViewChange *)applyChangedOnlineState:(firebase::firestore::model::OnlineState)onlineState;
 
 /**
  * The set of remote documents that the server has told us belongs to the target associated with
  * this view.
  */
-- (const model::DocumentKeySet &)syncedDocuments;
+- (const firebase::firestore::model::DocumentKeySet &)syncedDocuments;
 
 @end
 

@@ -7,11 +7,11 @@ target 'tinder-clone' do
 
   # Pods for tinder-clone
 
-  pod 'Firebase/Firestore’
-  pod 'Firebase/Auth’
-  pod 'Firebase/Storage’
+  pod 'Firebase/Firestore’,’~>5.10.0’
+  pod 'Firebase/Auth’,’~>5.10.0’
+  pod 'Firebase/Storage’,’~>5.10.0’
   pod 'Firebase/Core’
-  pod 'GoogleAppMeasurement'
+  pod 'GoogleAppMeasurement', '~> 5.2.0'
   pod 'SDWebImage','~>4.4.2’
   pod 'JGProgressHUD','~>2.0.3'
   pod 'LBTATools'

@@ -26,23 +26,6 @@ namespace firebase {
 namespace firestore {
 namespace model {
 
-enum class DocumentState {
-  /**
-   * Local mutations applied via the mutation queue. Document is potentially
-   * inconsistent.
-   */
-  kLocalMutations,
-
-  /**
-   * Mutations applied based on a write acknowledgment. Document is potentially
-   * inconsistent.
-   */
-  kCommittedMutations,
-
-  /** No mutations applied. Document was sent to us by Watch. */
-  kSynced,
-};
-
 /**
  * Represents a document in Firestore with a key, version, data and whether the
  * data has local mutations applied to it.
@@ -50,14 +33,14 @@ enum class DocumentState {
 class Document : public MaybeDocument {
  public:
   /**
-   * Construct a document. ObjectValue must be passed by rvalue.
+   * Construct a document. FieldValue must be passed by rvalue.
    */
-  Document(ObjectValue&& data,
+  Document(FieldValue&& data,
            DocumentKey key,
            SnapshotVersion version,
-           DocumentState document_state);
+           bool has_local_mutations);
 
-  const ObjectValue& data() const {
+  const FieldValue& data() const {
     return data_;
   }
 
@@ -65,30 +48,22 @@ class Document : public MaybeDocument {
     return data_.Get(path);
   }
 
-  bool HasLocalMutations() const {
-    return document_state_ == DocumentState::kLocalMutations;
-  }
-
-  bool HasCommittedMutations() const {
-    return document_state_ == DocumentState::kCommittedMutations;
-  }
-
-  bool HasPendingWrites() const override {
-    return HasLocalMutations() || HasCommittedMutations();
+  bool has_local_mutations() const {
+    return has_local_mutations_;
   }
 
  protected:
   bool Equals(const MaybeDocument& other) const override;
 
  private:
-  ObjectValue data_;
-  DocumentState document_state_;
+  FieldValue data_;  // This is of type Object.
+  bool has_local_mutations_;
 };
 
 /** Compares against another Document. */
 inline bool operator==(const Document& lhs, const Document& rhs) {
   return lhs.version() == rhs.version() && lhs.key() == rhs.key() &&
-         lhs.HasLocalMutations() == rhs.HasLocalMutations() &&
+         lhs.has_local_mutations() == rhs.has_local_mutations() &&
          lhs.data() == rhs.data();
 }
 

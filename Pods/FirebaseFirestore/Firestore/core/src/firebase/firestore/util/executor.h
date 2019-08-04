@@ -61,6 +61,8 @@ class DelayedOperation {
   std::function<void()> cancel_func_;
 };
 
+namespace internal {
+
 // An interface to a platform-specific executor of asynchronous operations
 // (called tasks on other platforms).
 //
@@ -130,6 +132,7 @@ class Executor {
   virtual absl::optional<TaggedOperation> PopFromSchedule() = 0;
 };
 
+}  // namespace internal
 }  // namespace util
 }  // namespace firestore
 }  // namespace firebase

@@ -52,7 +52,7 @@ const AsyncQueue::Milliseconds kIdleTimeout{std::chrono::seconds(60)};
 
 }  // namespace
 
-Stream::Stream(const std::shared_ptr<AsyncQueue>& worker_queue,
+Stream::Stream(AsyncQueue* worker_queue,
                CredentialsProvider* credentials_provider,
                GrpcConnection* grpc_connection,
                TimerId backoff_timer_id,
@@ -207,7 +207,7 @@ void Stream::OnStreamRead(const grpc::ByteBuffer& message) {
 
   Status read_status = NotifyStreamResponse(message);
   if (!read_status.ok()) {
-    grpc_stream_->FinishImmediately();
+    grpc_stream_->Finish();
     // Don't expect gRPC to produce status -- since the error happened on the
     // client, we have all the information we need.
     OnStreamFinish(read_status);

@@ -34,7 +34,6 @@ namespace firestore {
 namespace remote {
 namespace bridge {
 
-using core::DatabaseInfo;
 using model::DocumentKey;
 using model::TargetId;
 using model::SnapshotVersion;
@@ -61,15 +60,10 @@ std::string ToHexString(const grpc::ByteBuffer& buffer) {
   return output.str();
 }
 
-NSData* ConvertToNsData(const grpc::ByteBuffer& buffer, NSError** out_error) {
+NSData* ConvertToNsData(const grpc::ByteBuffer& buffer) {
   std::vector<grpc::Slice> slices;
   grpc::Status status = buffer.Dump(&slices);
-  if (!status.ok()) {
-    *out_error =
-        MakeNSError(Status{FirestoreErrorCode::Internal,
-                           "Trying to convert an invalid grpc::ByteBuffer"});
-    return nil;
-  }
+  HARD_ASSERT(status.ok(), "Trying to convert an invalid grpc::ByteBuffer");
 
   if (slices.size() == 1) {
     return [NSData dataWithBytes:slices.front().begin()
@@ -92,21 +86,18 @@ grpc::ByteBuffer ConvertToByteBuffer(NSData* data) {
 template <typename Proto>
 Proto* ToProto(const grpc::ByteBuffer& message, Status* out_status) {
   NSError* error = nil;
-  NSData* data = ConvertToNsData(message, &error);
+  Proto* proto = [Proto parseFromData:ConvertToNsData(message) error:&error];
   if (!error) {
-    Proto* proto = [Proto parseFromData:data error:&error];
-    if (!error) {
-      *out_status = Status::OK();
-      return proto;
-    }
+    *out_status = Status::OK();
+    return proto;
   }
 
-  std::string error_description =
-      StringFormat("Unable to parse response from the server.\n"
-                   "Underlying error: %s\n"
-                   "Expected class: %s\n"
-                   "Received value: %s\n",
-                   error, [Proto class], ToHexString(message));
+  std::string error_description = StringFormat(
+      "Unable to parse response from the server.\n"
+      "Underlying error: %s\n"
+      "Expected class: %s\n"
+      "Received value: %s\n",
+      error, [Proto class], ToHexString(message));
 
   *out_status = {FirestoreErrorCode::Internal, error_description};
   return nil;
@@ -147,7 +138,7 @@ GCFSListenResponse* WatchStreamSerializer::ParseResponse(
   return ToProto<GCFSListenResponse>(message, out_status);
 }
 
-std::unique_ptr<WatchChange> WatchStreamSerializer::ToWatchChange(
+FSTWatchChange* WatchStreamSerializer::ToWatchChange(
     GCFSListenResponse* proto) const {
   return [serializer_ decodedWatchChange:proto];
 }
@@ -179,10 +170,10 @@ GCFSWriteRequest* WriteStreamSerializer::CreateHandshake() const {
 }
 
 GCFSWriteRequest* WriteStreamSerializer::CreateWriteMutationsRequest(
-    const std::vector<FSTMutation*>& mutations) const {
+    NSArray<FSTMutation*>* mutations) const {
   NSMutableArray<GCFSWrite*>* protos =
-      [NSMutableArray arrayWithCapacity:mutations.size()];
-  for (FSTMutation* mutation : mutations) {
+      [NSMutableArray arrayWithCapacity:mutations.count];
+  for (FSTMutation* mutation in mutations) {
     [protos addObject:[serializer_ encodedMutation:mutation]];
   };
 
@@ -208,16 +199,16 @@ model::SnapshotVersion WriteStreamSerializer::ToCommitVersion(
   return [serializer_ decodedVersion:proto.commitTime];
 }
 
-std::vector<FSTMutationResult*> WriteStreamSerializer::ToMutationResults(
+NSArray<FSTMutationResult*>* WriteStreamSerializer::ToMutationResults(
     GCFSWriteResponse* response) const {
   NSMutableArray<GCFSWriteResult*>* responses = response.writeResultsArray;
-  std::vector<FSTMutationResult*> results;
-  results.reserve(responses.count);
+  NSMutableArray<FSTMutationResult*>* results =
+      [NSMutableArray arrayWithCapacity:responses.count];
 
   const model::SnapshotVersion commitVersion = ToCommitVersion(response);
   for (GCFSWriteResult* proto in responses) {
-    results.push_back([serializer_ decodedMutationResult:proto
-                                           commitVersion:commitVersion]);
+    [results addObject:[serializer_ decodedMutationResult:proto
+                                            commitVersion:commitVersion]];
   };
   return results;
 }
@@ -231,29 +222,6 @@ NSString* WriteStreamSerializer::Describe(GCFSWriteResponse* response) {
 }
 
 // DatastoreSerializer
-
-DatastoreSerializer::DatastoreSerializer(const DatabaseInfo& database_info)
-    : serializer_{[[FSTSerializerBeta alloc]
-          initWithDatabaseID:database_info.database_id()]} {
-}
-
-GCFSCommitRequest* DatastoreSerializer::CreateCommitRequest(
-    const std::vector<FSTMutation*>& mutations) const {
-  GCFSCommitRequest* request = [GCFSCommitRequest message];
-  request.database = [serializer_ encodedDatabaseID];
-
-  NSMutableArray<GCFSWrite*>* mutationProtos = [NSMutableArray array];
-  for (FSTMutation* mutation : mutations) {
-    [mutationProtos addObject:[serializer_ encodedMutation:mutation]];
-  }
-  request.writesArray = mutationProtos;
-
-  return request;
-}
-
-grpc::ByteBuffer DatastoreSerializer::ToByteBuffer(GCFSCommitRequest* request) {
-  return ConvertToByteBuffer([request data]);
-}
 
 GCFSBatchGetDocumentsRequest* DatastoreSerializer::CreateLookupRequest(
     const std::vector<DocumentKey>& keys) const {
@@ -273,7 +241,7 @@ grpc::ByteBuffer DatastoreSerializer::ToByteBuffer(
   return ConvertToByteBuffer([request data]);
 }
 
-std::vector<FSTMaybeDocument*> DatastoreSerializer::MergeLookupResponses(
+NSArray<FSTMaybeDocument*>* DatastoreSerializer::MergeLookupResponses(
     const std::vector<grpc::ByteBuffer>& responses, Status* out_status) const {
   // Sort by key.
   std::map<DocumentKey, FSTMaybeDocument*> results;
@@ -281,23 +249,59 @@ std::vector<FSTMaybeDocument*> DatastoreSerializer::MergeLookupResponses(
   for (const auto& response : responses) {
     auto* proto = ToProto<GCFSBatchGetDocumentsResponse>(response, out_status);
     if (!out_status->ok()) {
-      return {};
+      return nil;
     }
     FSTMaybeDocument* doc = [serializer_ decodedMaybeDocumentFromBatch:proto];
     results[doc.key] = doc;
   }
-
-  std::vector<FSTMaybeDocument*> docs;
-  docs.reserve(results.size());
+  NSMutableArray<FSTMaybeDocument*>* docs =
+      [NSMutableArray arrayWithCapacity:results.size()];
   for (const auto& kv : results) {
-    docs.push_back(kv.second);
+    [docs addObject:kv.second];
   }
+
   return docs;
 }
 
 FSTMaybeDocument* DatastoreSerializer::ToMaybeDocument(
     GCFSBatchGetDocumentsResponse* response) const {
   return [serializer_ decodedMaybeDocumentFromBatch:response];
+}
+
+// WatchStreamDelegate
+
+void WatchStreamDelegate::NotifyDelegateOnOpen() {
+  [delegate_ watchStreamDidOpen];
+}
+
+void WatchStreamDelegate::NotifyDelegateOnChange(
+    FSTWatchChange* change, const model::SnapshotVersion& snapshot_version) {
+  [delegate_ watchStreamDidChange:change snapshotVersion:snapshot_version];
+}
+
+void WatchStreamDelegate::NotifyDelegateOnClose(const Status& status) {
+  [delegate_ watchStreamWasInterruptedWithError:MakeNSError(status)];
+}
+
+// WriteStreamDelegate
+
+void WriteStreamDelegate::NotifyDelegateOnOpen() {
+  [delegate_ writeStreamDidOpen];
+}
+
+void WriteStreamDelegate::NotifyDelegateOnHandshakeComplete() {
+  [delegate_ writeStreamDidCompleteHandshake];
+}
+
+void WriteStreamDelegate::NotifyDelegateOnCommit(
+    const SnapshotVersion& commit_version,
+    NSArray<FSTMutationResult*>* results) {
+  [delegate_ writeStreamDidReceiveResponseWithVersion:commit_version
+                                      mutationResults:results];
+}
+
+void WriteStreamDelegate::NotifyDelegateOnClose(const Status& status) {
+  [delegate_ writeStreamWasInterruptedWithError:MakeNSError(status)];
 }
 
 }  // namespace bridge

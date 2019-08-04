@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "24AAEC4AF2DC78B838C63FCD163E5AF8"
+               BlueprintIdentifier = "6C253340ADFEC10712D20AE75B7066ED"
                BlueprintName = "LBTATools"
                ReferencedContainer = "container:Pods.xcodeproj"
                BuildableName = "LBTATools.framework">

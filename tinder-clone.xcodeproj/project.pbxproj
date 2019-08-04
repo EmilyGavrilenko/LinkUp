@@ -23,6 +23,7 @@
 		FE70D57622EC470800619811 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE70D57522EC470800619811 /* CustomTextField.swift */; };
 		FE8E5A4A22EBDA3500AE2027 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */; };
 		FE982A2D22F68519008FC9B0 /* RegistrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE982A2C22F68519008FC9B0 /* RegistrationViewModel.swift */; };
+		FE982A2F22F68E5A008FC9B0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +47,7 @@
 		FE70D57522EC470800619811 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
 		FE982A2C22F68519008FC9B0 /* RegistrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModel.swift; sourceTree = "<group>"; };
+		FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				FE27060922E991A300CA7225 /* tinder-clone */,
+				FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */,
 				FE27060822E991A300CA7225 /* Products */,
 				E2A98724AC0F9D789D8FA7AC /* Pods */,
 				5F861162C5CC4DB79B5118DA /* Frameworks */,
@@ -220,6 +223,7 @@
 			files = (
 				FE27061522E991A400CA7225 /* LaunchScreen.storyboard in Resources */,
 				FE27061222E991A400CA7225 /* Assets.xcassets in Resources */,
+				FE982A2F22F68E5A008FC9B0 /* GoogleService-Info.plist in Resources */,
 				FE27061022E991A300CA7225 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -241,8 +245,11 @@
 				"${BUILT_PRODUCTS_DIR}/LBTATools/LBTATools.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC/GRPCClient.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
 				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-ProtoRPC/ProtoRPC.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-RxLibrary/RxLibrary.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -255,8 +262,11 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LBTATools.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPCClient.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtoRPC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxLibrary.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);

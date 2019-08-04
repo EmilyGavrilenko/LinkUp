@@ -77,11 +77,6 @@ namespace local {
 // remote_documents:
 //   - table_name: string = "remote_document"
 //   - path: ResourcePath
-//
-// collection_parents:
-//   - table_name: string = "collection_parent"
-//   - collectionId: string
-//   - parent: ResourcePath
 
 /**
  * Parses the given key and returns a human readable description of its
@@ -126,7 +121,6 @@ class LevelDbMutationKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(absl::string_view key);
 
   /** The user that owns the mutation batches. */
@@ -190,7 +184,6 @@ class LevelDbDocumentMutationKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(absl::string_view key);
 
   /** The user that owns the mutation batches. */
@@ -242,8 +235,7 @@ class LevelDbMutationQueueKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
-  bool Decode(absl::string_view key);
+  bool Decode(leveldb::Slice key);
 
   const std::string& user_id() const {
     return user_id_;
@@ -267,7 +259,6 @@ class LevelDbTargetGlobalKey {
    * Decodes the contents of a target global key, essentially just verifying
    * that the key has the correct table name.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(leveldb::Slice key);
 };
 
@@ -290,7 +281,6 @@ class LevelDbTargetKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(leveldb::Slice key);
 
   model::TargetId target_id() {
@@ -332,7 +322,6 @@ class LevelDbQueryTargetKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(absl::string_view key);
 
   /** The canonical_id derived from the query. */
@@ -381,7 +370,6 @@ class LevelDbTargetDocumentKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(absl::string_view key);
 
   /** The target_id identifying a target. */
@@ -429,18 +417,6 @@ class LevelDbDocumentTargetKey {
   static std::string SentinelKey(const model::DocumentKey& document_key);
 
   /**
-   * Given a sequence number, encodes it for storage in a sentinel row.
-   */
-  static std::string EncodeSentinelValue(
-      model::ListenSequenceNumber sequence_number);
-
-  /**
-   * Given an encoded sentinel row, return the sequence number.
-   */
-  static model::ListenSequenceNumber DecodeSentinelValue(
-      absl::string_view slice);
-
-  /**
    * Decodes the contents of a document target key, storing the decoded values
    * in this instance.
    *
@@ -448,7 +424,6 @@ class LevelDbDocumentTargetKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(absl::string_view key);
 
   /** The target_id identifying a target. */
@@ -512,7 +487,6 @@ class LevelDbRemoteDocumentKey {
    * returned, this instance is in an undefined state until the next call to
    * `Decode()`.
    */
-  ABSL_MUST_USE_RESULT
   bool Decode(absl::string_view key);
 
   /** The path to the document, as encoded in the key. */
@@ -523,59 +497,6 @@ class LevelDbRemoteDocumentKey {
  private:
   // Deliberately uninitialized: will be assigned in Decode
   model::DocumentKey document_key_;
-};
-
-/**
- * A key in the collection parents index, which stores an association between a
- * Collection ID (e.g. 'messages') to a parent path (e.g. '/chats/123') that
- * contains it as a (sub)collection. This is used to efficiently find all
- * collections to query when performing a Collection Group query. Note that the
- * parent path will be an empty path in the case of root-level collections.
- */
-class LevelDbCollectionParentKey {
- public:
-  /**
-   * Creates a key prefix that points just before the first key in the table.
-   */
-  static std::string KeyPrefix();
-
-  /**
-   * Creates a key prefix that points just before the first key for the given
-   * collection_id.
-   */
-  static std::string KeyPrefix(absl::string_view collection_id);
-
-  /**
-   * Creates a complete key that points to a specific collection_id and parent.
-   */
-  static std::string Key(absl::string_view collection_id,
-                         const model::ResourcePath& parent);
-
-  /**
-   * Decodes the given complete key, storing the decoded values in this
-   * instance.
-   *
-   * @return true if the key successfully decoded, false otherwise. If false is
-   * returned, this instance is in an undefined state until the next call to
-   * `Decode()`.
-   */
-  ABSL_MUST_USE_RESULT
-  bool Decode(absl::string_view key);
-
-  /** The collection_id, as encoded in the key. */
-  const std::string& collection_id() const {
-    return collection_id_;
-  }
-
-  /** The parent path, as encoded in the key. */
-  const model::ResourcePath& parent() const {
-    return parent_;
-  }
-
- private:
-  // Deliberately uninitialized: will be assigned in Decode
-  std::string collection_id_;
-  model::ResourcePath parent_;
 };
 
 }  // namespace local

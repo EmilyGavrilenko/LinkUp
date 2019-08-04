@@ -20,7 +20,7 @@
 #import "FIRStorageTask_Private.h"
 #import "FIRStorageUploadTask_Private.h"
 
-#import <GTMSessionFetcher/GTMSessionUploadFetcher.h>
+#import "GTMSessionUploadFetcher.h"
 
 @implementation FIRStorageUploadTask
 
@@ -29,10 +29,9 @@
 
 - (instancetype)initWithReference:(FIRStorageReference *)reference
                    fetcherService:(GTMSessionFetcherService *)service
-                    dispatchQueue:(dispatch_queue_t)queue
                              data:(NSData *)uploadData
                          metadata:(FIRStorageMetadata *)metadata {
-  self = [super initWithReference:reference fetcherService:service dispatchQueue:queue];
+  self = [super initWithReference:reference fetcherService:service];
   if (self) {
     _uploadMetadata = [metadata copy];
     _uploadData = [uploadData copy];
@@ -47,10 +46,9 @@
 
 - (instancetype)initWithReference:(FIRStorageReference *)reference
                    fetcherService:(GTMSessionFetcherService *)service
-                    dispatchQueue:(dispatch_queue_t)queue
                              file:(NSURL *)fileURL
                          metadata:(FIRStorageMetadata *)metadata {
-  self = [super initWithReference:reference fetcherService:service dispatchQueue:queue];
+  self = [super initWithReference:reference fetcherService:service];
   if (self) {
     _uploadMetadata = [metadata copy];
     _fileURL = [fileURL copy];
@@ -70,192 +68,145 @@
 }
 
 - (void)enqueue {
+  NSAssert([NSThread isMainThread],
+           @"Upload attempting to execute on non main queue! Please only "
+           @"execute this method on the main queue.");
+  self.state = FIRStorageTaskStateQueueing;
+
+  NSMutableURLRequest *request = [self.baseRequest mutableCopy];
+  request.HTTPMethod = @"POST";
+  request.timeoutInterval = self.reference.storage.maxUploadRetryTime;
+  NSData *bodyData = [NSData frs_dataFromJSONDictionary:[_uploadMetadata dictionaryRepresentation]];
+  request.HTTPBody = bodyData;
+  [request setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
+  NSString *contentLengthString =
+      [NSString stringWithFormat:@"%zu", (unsigned long)[bodyData length]];
+  [request setValue:contentLengthString forHTTPHeaderField:@"Content-Length"];
+
+  NSURLComponents *components =
+      [NSURLComponents componentsWithURL:request.URL resolvingAgainstBaseURL:NO];
+
+  if ([components.host isEqual:kGCSHost]) {
+    [components setPercentEncodedPath:[@"/upload" stringByAppendingString:components.path]];
+  }
+
+  NSDictionary *queryParams = @{@"uploadType" : @"resumable", @"name" : self.uploadMetadata.path};
+  [components setPercentEncodedQuery:[FIRStorageUtils queryStringForDictionary:queryParams]];
+  request.URL = components.URL;
+
+  GTMSessionUploadFetcher *uploadFetcher =
+      [GTMSessionUploadFetcher uploadFetcherWithRequest:request
+                                         uploadMIMEType:_uploadMetadata.contentType
+                                              chunkSize:kGTMSessionUploadFetcherStandardChunkSize
+                                         fetcherService:self.fetcherService];
+
+  if (_uploadData) {
+    [uploadFetcher setUploadData:_uploadData];
+    uploadFetcher.comment = @"Data UploadTask";
+  } else if (_fileURL) {
+    [uploadFetcher setUploadFileURL:_fileURL];
+    uploadFetcher.comment = @"File UploadTask";
+  }
+
+  uploadFetcher.maxRetryInterval = self.reference.storage.maxUploadRetryTime;
+
   __weak FIRStorageUploadTask *weakSelf = self;
 
-  [self dispatchAsync:^() {
-    FIRStorageUploadTask *strongSelf = weakSelf;
+  [uploadFetcher setSendProgressBlock:^(int64_t bytesSent, int64_t totalBytesSent,
+                                        int64_t totalBytesExpectedToSend) {
+    weakSelf.state = FIRStorageTaskStateProgress;
+    weakSelf.progress.completedUnitCount = totalBytesSent;
+    weakSelf.progress.totalUnitCount = totalBytesExpectedToSend;
+    weakSelf.metadata = self->_uploadMetadata;
+    [weakSelf fireHandlersForStatus:FIRStorageTaskStatusProgress snapshot:weakSelf.snapshot];
+    weakSelf.state = FIRStorageTaskStateRunning;
+  }];
 
-    if (!strongSelf) {
-      return;
-    }
+  _uploadFetcher = uploadFetcher;
 
-    NSError *contentValidationError;
-    if (![strongSelf isContentToUploadValid:&contentValidationError]) {
-      strongSelf.error = contentValidationError;
-      [strongSelf finishTaskWithStatus:FIRStorageTaskStatusFailure snapshot:strongSelf.snapshot];
-      return;
-    }
-
-    strongSelf.state = FIRStorageTaskStateQueueing;
-
-    NSMutableURLRequest *request = [strongSelf.baseRequest mutableCopy];
-    request.HTTPMethod = @"POST";
-    request.timeoutInterval = strongSelf.reference.storage.maxUploadRetryTime;
-    NSData *bodyData =
-        [NSData frs_dataFromJSONDictionary:[strongSelf->_uploadMetadata dictionaryRepresentation]];
-    request.HTTPBody = bodyData;
-    [request setValue:@"application/json; charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
-    NSString *contentLengthString =
-        [NSString stringWithFormat:@"%zu", (unsigned long)[bodyData length]];
-    [request setValue:contentLengthString forHTTPHeaderField:@"Content-Length"];
-
-    NSURLComponents *components = [NSURLComponents componentsWithURL:request.URL
-                                             resolvingAgainstBaseURL:NO];
-
-    if ([components.host isEqual:kGCSHost]) {
-      [components setPercentEncodedPath:[@"/upload" stringByAppendingString:components.path]];
-    }
-
-    NSDictionary *queryParams = @{@"uploadType" : @"resumable", @"name" : self.uploadMetadata.path};
-    [components setPercentEncodedQuery:[FIRStorageUtils queryStringForDictionary:queryParams]];
-    request.URL = components.URL;
-
-    GTMSessionUploadFetcher *uploadFetcher =
-        [GTMSessionUploadFetcher uploadFetcherWithRequest:request
-                                           uploadMIMEType:strongSelf->_uploadMetadata.contentType
-                                                chunkSize:kGTMSessionUploadFetcherStandardChunkSize
-                                           fetcherService:self.fetcherService];
-
-    if (strongSelf->_uploadData) {
-      [uploadFetcher setUploadData:strongSelf->_uploadData];
-      uploadFetcher.comment = @"Data UploadTask";
-    } else if (strongSelf->_fileURL) {
-      [uploadFetcher setUploadFileURL:strongSelf->_fileURL];
-      uploadFetcher.comment = @"File UploadTask";
-    }
-
-    uploadFetcher.maxRetryInterval = self.reference.storage.maxUploadRetryTime;
-
-    [uploadFetcher setSendProgressBlock:^(int64_t bytesSent, int64_t totalBytesSent,
-                                          int64_t totalBytesExpectedToSend) {
-      weakSelf.state = FIRStorageTaskStateProgress;
-      weakSelf.progress.completedUnitCount = totalBytesSent;
-      weakSelf.progress.totalUnitCount = totalBytesExpectedToSend;
-      weakSelf.metadata = self->_uploadMetadata;
-      [weakSelf fireHandlersForStatus:FIRStorageTaskStatusProgress snapshot:weakSelf.snapshot];
-      weakSelf.state = FIRStorageTaskStateRunning;
-    }];
-
-    strongSelf->_uploadFetcher = uploadFetcher;
-
-    // Process fetches
-    strongSelf.state = FIRStorageTaskStateRunning;
+  // Process fetches
+  self.state = FIRStorageTaskStateRunning;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
-    strongSelf->_fetcherCompletion = ^(NSData *_Nullable data, NSError *_Nullable error) {
-      // Fire last progress updates
-      [self fireHandlersForStatus:FIRStorageTaskStatusProgress snapshot:self.snapshot];
+  _fetcherCompletion = ^(NSData *_Nullable data, NSError *_Nullable error) {
+    // Fire last progress updates
+    [self fireHandlersForStatus:FIRStorageTaskStatusProgress snapshot:self.snapshot];
 
-      // Handle potential issues with upload
-      if (error) {
-        self.state = FIRStorageTaskStateFailed;
-        self.error = [FIRStorageErrors errorWithServerError:error reference:self.reference];
-        self.metadata = self->_uploadMetadata;
-
-        [self finishTaskWithStatus:FIRStorageTaskStatusFailure snapshot:self.snapshot];
-        return;
-      }
-
-      // Upload completed successfully, fire completion callbacks
-      self.state = FIRStorageTaskStateSuccess;
-
-      NSDictionary *responseDictionary = [NSDictionary frs_dictionaryFromJSONData:data];
-      if (responseDictionary) {
-        FIRStorageMetadata *metadata =
-            [[FIRStorageMetadata alloc] initWithDictionary:responseDictionary];
-        [metadata setType:FIRStorageMetadataTypeFile];
-        self.metadata = metadata;
-      } else {
-        self.error = [FIRStorageErrors errorWithInvalidRequest:data];
-      }
-
-      [self finishTaskWithStatus:FIRStorageTaskStatusSuccess snapshot:self.snapshot];
-    };
-#pragma clang diagnostic pop
-
-    [strongSelf->_uploadFetcher
-        beginFetchWithCompletionHandler:^(NSData *_Nullable data, NSError *_Nullable error) {
-          weakSelf.fetcherCompletion(data, error);
-        }];
-  }];
-}
-
-- (void)finishTaskWithStatus:(FIRStorageTaskStatus)status
-                    snapshot:(FIRStorageTaskSnapshot *)snapshot {
-  [self fireHandlersForStatus:status snapshot:self.snapshot];
-  [self removeAllObservers];
-  self->_fetcherCompletion = nil;
-}
-
-- (BOOL)isContentToUploadValid:(NSError **)outError {
-  if (_uploadData != nil) {
-    return YES;
-  }
-
-  NSError *fileReachabilityError;
-  if (![_fileURL checkResourceIsReachableAndReturnError:&fileReachabilityError]) {
-    if (outError != NULL) {
-      NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:2];
-      userInfo[NSLocalizedDescriptionKey] =
-          [NSString stringWithFormat:@"File at URL: %@ is not reachable.", _fileURL.absoluteString];
-
-      if (fileReachabilityError) {
-        userInfo[NSUnderlyingErrorKey] = fileReachabilityError;
-      }
-
-      *outError = [NSError errorWithDomain:FIRStorageErrorDomain
-                                      code:FIRStorageErrorCodeUnknown
-                                  userInfo:userInfo];
+    // Handle potential issues with upload
+    if (error) {
+      self.state = FIRStorageTaskStateFailed;
+      self.error = [FIRStorageErrors errorWithServerError:error reference:self.reference];
+      self.metadata = self->_uploadMetadata;
+      [self fireHandlersForStatus:FIRStorageTaskStatusFailure snapshot:self.snapshot];
+      [self removeAllObservers];
+      self->_fetcherCompletion = nil;
+      return;
     }
 
-    return NO;
-  }
+    // Upload completed successfully, fire completion callbacks
+    self.state = FIRStorageTaskStateSuccess;
 
-  return YES;
+    NSDictionary *responseDictionary = [NSDictionary frs_dictionaryFromJSONData:data];
+    if (responseDictionary) {
+      FIRStorageMetadata *metadata =
+          [[FIRStorageMetadata alloc] initWithDictionary:responseDictionary];
+      [metadata setType:FIRStorageMetadataTypeFile];
+      self.metadata = metadata;
+    } else {
+      self.error = [FIRStorageErrors errorWithInvalidRequest:data];
+    }
+
+    [self fireHandlersForStatus:FIRStorageTaskStatusSuccess snapshot:self.snapshot];
+    [self removeAllObservers];
+    self->_fetcherCompletion = nil;
+  };
+#pragma clang diagnostic pop
+
+  [_uploadFetcher
+      beginFetchWithCompletionHandler:^(NSData *_Nullable data, NSError *_Nullable error) {
+        weakSelf.fetcherCompletion(data, error);
+      }];
 }
 
 #pragma mark - Upload Management
 
 - (void)cancel {
-  __weak FIRStorageUploadTask *weakSelf = self;
-
-  [self dispatchAsync:^() {
-    weakSelf.state = FIRStorageTaskStateCancelled;
-    [weakSelf.uploadFetcher stopFetching];
-    if (weakSelf.state != FIRStorageTaskStateSuccess) {
-      weakSelf.metadata = weakSelf.uploadMetadata;
-    }
-    weakSelf.error = [FIRStorageErrors errorWithCode:FIRStorageErrorCodeCancelled];
-    [weakSelf fireHandlersForStatus:FIRStorageTaskStatusFailure snapshot:weakSelf.snapshot];
-  }];
+  NSAssert([NSThread isMainThread],
+           @"Cancel attempting to execute on non main queue! Please only "
+           @"execute this method on the main queue.");
+  self.state = FIRStorageTaskStateCancelled;
+  [_uploadFetcher stopFetching];
+  if (self.state != FIRStorageTaskStateSuccess) {
+    self.metadata = _uploadMetadata;
+  }
+  self.error = [FIRStorageErrors errorWithCode:FIRStorageErrorCodeCancelled];
+  [self fireHandlersForStatus:FIRStorageTaskStatusFailure snapshot:self.snapshot];
 }
 
 - (void)pause {
-  __weak FIRStorageUploadTask *weakSelf = self;
-
-  [self dispatchAsync:^() {
-    weakSelf.state = FIRStorageTaskStatePaused;
-    [weakSelf.uploadFetcher pauseFetching];
-    if (weakSelf.state != FIRStorageTaskStateSuccess) {
-      weakSelf.metadata = weakSelf.uploadMetadata;
-    }
-    [weakSelf fireHandlersForStatus:FIRStorageTaskStatusPause snapshot:weakSelf.snapshot];
-  }];
+  NSAssert([NSThread isMainThread],
+           @"Pause attempting to execute on non main queue! Please only "
+           @"execute this method on the main queue.");
+  self.state = FIRStorageTaskStatePaused;
+  [_uploadFetcher pauseFetching];
+  if (self.state != FIRStorageTaskStateSuccess) {
+    self.metadata = _uploadMetadata;
+  }
+  [self fireHandlersForStatus:FIRStorageTaskStatusPause snapshot:self.snapshot];
 }
 
 - (void)resume {
-  __weak FIRStorageUploadTask *weakSelf = self;
-
-  [self dispatchAsync:^() {
-    weakSelf.state = FIRStorageTaskStateResuming;
-    [weakSelf.uploadFetcher resumeFetching];
-    if (weakSelf.state != FIRStorageTaskStateSuccess) {
-      weakSelf.metadata = weakSelf.uploadMetadata;
-    }
-    [weakSelf fireHandlersForStatus:FIRStorageTaskStatusResume snapshot:weakSelf.snapshot];
-    weakSelf.state = FIRStorageTaskStateRunning;
-  }];
+  NSAssert([NSThread isMainThread],
+           @"Resume attempting to execute on non main queue! Please only "
+           @"execute this method on the main queue.");
+  self.state = FIRStorageTaskStateResuming;
+  [_uploadFetcher resumeFetching];
+  if (self.state != FIRStorageTaskStateSuccess) {
+    self.metadata = _uploadMetadata;
+  }
+  [self fireHandlersForStatus:FIRStorageTaskStatusResume snapshot:self.snapshot];
+  self.state = FIRStorageTaskStateRunning;
 }
 
 @end

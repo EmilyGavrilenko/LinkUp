@@ -31,9 +31,8 @@
 @synthesize state = _state;
 
 - (instancetype)initWithReference:(FIRStorageReference *)reference
-                   fetcherService:(GTMSessionFetcherService *)service
-                    dispatchQueue:(dispatch_queue_t)queue {
-  self = [super initWithReference:reference fetcherService:service dispatchQueue:queue];
+                   fetcherService:(GTMSessionFetcherService *)service {
+  self = [super initWithReference:reference fetcherService:service];
   if (self) {
     _pauseHandlers = [[NSMutableDictionary alloc] init];
     _resumeHandlers = [[NSMutableDictionary alloc] init];

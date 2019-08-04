@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithReference:(FIRStorageReference *)reference
                    fetcherService:(GTMSessionFetcherService *)service
-                    dispatchQueue:(dispatch_queue_t)queue
                        completion:(FIRStorageVoidError)completion;
 
 @end

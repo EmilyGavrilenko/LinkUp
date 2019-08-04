@@ -59,11 +59,6 @@
   */
  @property(nonatomic, assign, readonly) BOOL androidInstallIfNotAvailable;
 
- /** @property dynamicLinkDomain
-     @brief The Firebase Dynamic Link domain used for out of band code flow.
-  */
- @property(copy, nonatomic, nullable) NSString *dynamicLinkDomain;
-
  /** @fn setIOSBundleID
      @brief Sets the iOS bundle Id.
      @param iOSBundleID The iOS bundle ID.
@@ -71,8 +66,8 @@
   - (void)setIOSBundleID:(NSString *)iOSBundleID;
 
  /** @fn setAndroidPackageName:installIfNotAvailable:minimumVersion:
-     @brief Sets the Android package name, the flag to indicate whether or not to install the app
-         and the minimum Android version supported.
+     @brief Sets the Android package name, the flag to indicate whether or not to install the app and
+         the minimum Android version supported.
      @param androidPackageName The Android package name.
      @param installIfNotAvailable Indicates whether or not the app should be installed if not
          available.

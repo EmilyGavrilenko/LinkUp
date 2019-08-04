@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      https://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This file tests string processing functions related to numeric values.
+// This file tests std::string processing functions related to numeric values.
 
 #include "absl/strings/numbers.h"
 
@@ -38,8 +38,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/strings/str_cat.h"
 
-#include "absl/strings/internal/numbers_test_common.h"
-#include "absl/strings/internal/pow10_helper.h"
+#include "absl/strings/internal/numbers_test_common.inc"
 
 namespace {
 
@@ -49,19 +48,21 @@ using absl::numbers_internal::safe_strto64_base;
 using absl::numbers_internal::safe_strtou32_base;
 using absl::numbers_internal::safe_strtou64_base;
 using absl::numbers_internal::SixDigitsToBuffer;
-using absl::strings_internal::Itoa;
-using absl::strings_internal::strtouint32_test_cases;
-using absl::strings_internal::strtouint64_test_cases;
 using absl::SimpleAtoi;
 using testing::Eq;
 using testing::MatchesRegex;
 
 // Number of floats to test with.
-// 5,000,000 is a reasonable default for a test that only takes a few seconds.
+// 10,000,000 is a reasonable default for a test that only takes a few seconds.
 // 1,000,000,000+ triggers checking for all possible mantissa values for
 // double-precision tests. 2,000,000,000+ triggers checking for every possible
 // single-precision float.
+#ifdef _MSC_VER
+// Use a smaller number on MSVC to avoid test time out (1 min)
 const int kFloatNumCases = 5000000;
+#else
+const int kFloatNumCases = 10000000;
+#endif
 
 // This is a slow, brute-force routine to compute the exact base-10
 // representation of a double-precision floating-point number.  It
@@ -118,7 +119,7 @@ TEST(ToString, PerfectDtoa) {
          {1e-300, 1e-200, 1e-100, 0.1, 1.0, 10.0, 1e100, 1e300}) {
       double d = multiplier * i;
       std::string s = PerfectDtoa(d);
-      EXPECT_DOUBLE_EQ(d, strtod(s.c_str(), nullptr));
+      EXPECT_EQ(d, strtod(s.c_str(), nullptr));
     }
   }
 }
@@ -191,8 +192,7 @@ void CheckUInt64(uint64_t x) {
   EXPECT_EQ(expected, std::string(&buffer[1], actual)) << " Input " << x;
 
   char* generic_actual = absl::numbers_internal::FastIntToBuffer(x, &buffer[1]);
-  EXPECT_EQ(expected, std::string(&buffer[1], generic_actual))
-      << " Input " << x;
+  EXPECT_EQ(expected, std::string(&buffer[1], generic_actual)) << " Input " << x;
 
   char* my_actual =
       absl::numbers_internal::FastIntToBuffer(MyUInt64(x), &buffer[1]);
@@ -654,8 +654,8 @@ TEST(stringtest, safe_strtou64_random) {
 }
 
 TEST(stringtest, safe_strtou32_base) {
-  for (int i = 0; strtouint32_test_cases()[i].str != nullptr; ++i) {
-    const auto& e = strtouint32_test_cases()[i];
+  for (int i = 0; strtouint32_test_cases[i].str != nullptr; ++i) {
+    const auto& e = strtouint32_test_cases[i];
     uint32_t value;
     EXPECT_EQ(e.expect_ok, safe_strtou32_base(e.str, &value, e.base))
         << "str=\"" << e.str << "\" base=" << e.base;
@@ -667,8 +667,8 @@ TEST(stringtest, safe_strtou32_base) {
 }
 
 TEST(stringtest, safe_strtou32_base_length_delimited) {
-  for (int i = 0; strtouint32_test_cases()[i].str != nullptr; ++i) {
-    const auto& e = strtouint32_test_cases()[i];
+  for (int i = 0; strtouint32_test_cases[i].str != nullptr; ++i) {
+    const auto& e = strtouint32_test_cases[i];
     std::string tmp(e.str);
     tmp.append("12");  // Adds garbage at the end.
 
@@ -685,8 +685,8 @@ TEST(stringtest, safe_strtou32_base_length_delimited) {
 }
 
 TEST(stringtest, safe_strtou64_base) {
-  for (int i = 0; strtouint64_test_cases()[i].str != nullptr; ++i) {
-    const auto& e = strtouint64_test_cases()[i];
+  for (int i = 0; strtouint64_test_cases[i].str != nullptr; ++i) {
+    const auto& e = strtouint64_test_cases[i];
     uint64_t value;
     EXPECT_EQ(e.expect_ok, safe_strtou64_base(e.str, &value, e.base))
         << "str=\"" << e.str << "\" base=" << e.base;
@@ -697,8 +697,8 @@ TEST(stringtest, safe_strtou64_base) {
 }
 
 TEST(stringtest, safe_strtou64_base_length_delimited) {
-  for (int i = 0; strtouint64_test_cases()[i].str != nullptr; ++i) {
-    const auto& e = strtouint64_test_cases()[i];
+  for (int i = 0; strtouint64_test_cases[i].str != nullptr; ++i) {
+    const auto& e = strtouint64_test_cases[i];
     std::string tmp(e.str);
     tmp.append("12");  // Adds garbage at the end.
 
@@ -713,9 +713,8 @@ TEST(stringtest, safe_strtou64_base_length_delimited) {
   }
 }
 
-// feenableexcept() and fedisableexcept() are missing on Mac OS X, MSVC,
-// and WebAssembly.
-#if defined(_MSC_VER) || defined(__APPLE__) || defined(__EMSCRIPTEN__)
+// feenableexcept() and fedisableexcept() are missing on Mac OS X, MSVC.
+#if defined(_MSC_VER) || defined(__APPLE__)
 #define ABSL_MISSING_FEENABLEEXCEPT 1
 #define ABSL_MISSING_FEDISABLEEXCEPT 1
 #endif
@@ -785,7 +784,7 @@ void ExhaustiveFloat(uint32_t cases, R&& runnable) {
   if (iters_per_float == 0) iters_per_float = 1;
   for (float f : floats) {
     if (f == last) continue;
-    float testf = std::nextafter(last, std::numeric_limits<float>::max());
+    float testf = nextafter(last, std::numeric_limits<float>::max());
     runnable(testf);
     runnable(-testf);
     last = testf;
@@ -799,7 +798,7 @@ void ExhaustiveFloat(uint32_t cases, R&& runnable) {
         last = testf;
       }
     }
-    testf = std::nextafter(f, 0.0f);
+    testf = nextafter(f, 0.0f);
     if (testf > last) {
       runnable(testf);
       runnable(-testf);
@@ -873,15 +872,15 @@ TEST_F(SimpleDtoaTest, ExhaustiveDoubleToSixDigits) {
     }
 
     for (int exponent = -324; exponent <= 308; ++exponent) {
-      double powten = absl::strings_internal::Pow10(exponent);
+      double powten = pow(10.0, exponent);
       if (powten == 0) powten = 5e-324;
       if (kFloatNumCases >= 1e9) {
         // The exhaustive test takes a very long time, so log progress.
         char buf[kSixDigitsToBufferSize];
         ABSL_RAW_LOG(
             INFO, "%s",
-            absl::StrCat("Exp ", exponent, " powten=", powten, "(", powten,
-                         ") (",
+            absl::StrCat("Exp ", exponent, " powten=", powten, "(",
+                         powten, ") (",
                          std::string(buf, SixDigitsToBuffer(powten, buf)), ")")
                 .c_str());
       }

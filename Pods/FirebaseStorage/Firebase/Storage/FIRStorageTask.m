@@ -22,26 +22,26 @@
 #import "FIRStorageTask_Private.h"
 #import "FIRStorage_Private.h"
 
-#import <GTMSessionFetcher/GTMSessionFetcherService.h>
+#import "GTMSessionFetcherService.h"
 
 @implementation FIRStorageTask
 
 - (instancetype)init {
-  @throw [NSException exceptionWithName:@"Attempt to call unavailable initializer."
-                                 reason:@"init unavailable, use designated initializer"
-                               userInfo:nil];
+  FIRStorage *storage = [FIRStorage storage];
+  FIRStorageReference *reference = [storage reference];
+  FIRStorageTask *task =
+      [self initWithReference:reference fetcherService:storage.fetcherServiceForApp];
+  return task;
 }
 
 - (instancetype)initWithReference:(FIRStorageReference *)reference
-                   fetcherService:(GTMSessionFetcherService *)service
-                    dispatchQueue:(dispatch_queue_t)queue {
+                   fetcherService:(GTMSessionFetcherService *)service {
   self = [super init];
   if (self) {
     _reference = reference;
     _baseRequest = [FIRStorageUtils defaultRequestForPath:reference.path];
     _fetcherService = service;
     _fetcherService.maxRetryInterval = _reference.storage.maxOperationRetryTime;
-    _dispatchQueue = queue;
   }
   return self;
 }
@@ -59,10 +59,6 @@
                                                error:[self.error copy]];
     return snapshot;
   }
-}
-
-- (void)dispatchAsync:(void (^)(void))block {
-  dispatch_async(self.dispatchQueue, block);
 }
 
 @end

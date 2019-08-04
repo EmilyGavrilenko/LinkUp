@@ -35,20 +35,12 @@ class MaybeDocument {
  public:
   /**
    * All the different kinds of documents, including MaybeDocument and its
-   * subclasses. This is used to provide RTTI for documents. See the docstrings
-   * of the subclasses for details.
+   * subclasses. This is used to provide RTTI for documents.
    */
   enum class Type {
-    // An unknown subclass of MaybeDocument. This should never happen.
-    //
-    // TODO(rsgowman): Since it's no longer possible to directly create
-    // MaybeDocument's, we can likely remove this value entirely. But
-    // investigate impact on the serializers first.
     Unknown,
-
     Document,
     NoDocument,
-    UnknownDocument,
   };
 
   MaybeDocument(DocumentKey key, SnapshotVersion version);
@@ -73,12 +65,6 @@ class MaybeDocument {
   const SnapshotVersion& version() const {
     return version_;
   }
-
-  /**
-   * Whether this document has a local mutation applied that has not yet been
-   * acknowledged by Watch.
-   */
-  virtual bool HasPendingWrites() const = 0;
 
  protected:
   // Only allow subclass to set their types.

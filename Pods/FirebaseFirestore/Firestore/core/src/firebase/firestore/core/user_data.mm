@@ -19,15 +19,14 @@
 #include <utility>
 
 #import "Firestore/Source/Model/FSTMutation.h"
+#import "Firestore/Source/Util/FSTUsageValidation.h"
 
-#include "Firestore/core/src/firebase/firestore/api/input_validation.h"
 #include "absl/strings/match.h"
 
 namespace firebase {
 namespace firestore {
 namespace core {
 
-using api::ThrowInvalidArgument;
 using model::DocumentKey;
 using model::FieldMask;
 using model::FieldPath;
@@ -59,7 +58,7 @@ bool ParseAccumulator::Contains(const FieldPath& field_path) const {
 }
 
 void ParseAccumulator::AddToFieldMask(FieldPath field_path) {
-  field_mask_.insert(std::move(field_path));
+  field_mask_.push_back(std::move(field_path));
 }
 
 void ParseAccumulator::AddToFieldTransforms(
@@ -156,8 +155,8 @@ bool ParseContext::write() const {
     case UserDataSource::Argument:
       return false;
     default:
-      ThrowInvalidArgument("Unexpected case for UserDataSource: %s",
-                           accumulator_->data_source());
+      FSTThrowInvalidArgument(@"Unexpected case for UserDataSource: %d",
+                              accumulator_->data_source());
   }
 }
 
@@ -176,8 +175,9 @@ void ParseContext::ValidatePathSegment(absl::string_view segment) const {
   absl::string_view designator{RESERVED_FIELD_DESIGNATOR};
   if (write() && absl::StartsWith(segment, designator) &&
       absl::EndsWith(segment, designator)) {
-    ThrowInvalidArgument("Document fields cannot begin and end with %s%s",
-                         RESERVED_FIELD_DESIGNATOR, FieldDescription());
+    FSTThrowInvalidArgument(@"Document fields cannot begin and end with %s%s",
+                            RESERVED_FIELD_DESIGNATOR,
+                            FieldDescription().c_str());
   }
 }
 
@@ -210,30 +210,25 @@ ParsedSetData::ParsedSetData(FSTObjectValue* data,
       patch_{true} {
 }
 
-std::vector<FSTMutation*> ParsedSetData::ToMutations(
+NSArray<FSTMutation*>* ParsedSetData::ToMutations(
     const DocumentKey& key, const Precondition& precondition) && {
-  std::vector<FSTMutation*> mutations;
+  NSMutableArray<FSTMutation*>* mutations = [NSMutableArray array];
   if (patch_) {
-    FSTMutation* mutation =
-        [[FSTPatchMutation alloc] initWithKey:key
-                                    fieldMask:std::move(field_mask_)
-                                        value:data_
-                                 precondition:precondition];
-    mutations.push_back(mutation);
+    [mutations
+        addObject:[[FSTPatchMutation alloc] initWithKey:key
+                                              fieldMask:std::move(field_mask_)
+                                                  value:data_
+                                           precondition:precondition]];
   } else {
-    FSTMutation* mutation = [[FSTSetMutation alloc] initWithKey:key
-                                                          value:data_
-                                                   precondition:precondition];
-    mutations.push_back(mutation);
+    [mutations addObject:[[FSTSetMutation alloc] initWithKey:key
+                                                       value:data_
+                                                precondition:precondition]];
   }
-
   if (!field_transforms_.empty()) {
-    FSTMutation* mutation =
-        [[FSTTransformMutation alloc] initWithKey:key
-                                  fieldTransforms:field_transforms_];
-    mutations.push_back(mutation);
+    [mutations
+        addObject:[[FSTTransformMutation alloc] initWithKey:key
+                                            fieldTransforms:field_transforms_]];
   }
-
   return mutations;
 }
 
@@ -248,24 +243,19 @@ ParsedUpdateData::ParsedUpdateData(
       field_transforms_{std::move(field_transforms)} {
 }
 
-std::vector<FSTMutation*> ParsedUpdateData::ToMutations(
+NSArray<FSTMutation*>* ParsedUpdateData::ToMutations(
     const DocumentKey& key, const Precondition& precondition) && {
-  std::vector<FSTMutation*> mutations;
-
-  FSTMutation* mutation =
-      [[FSTPatchMutation alloc] initWithKey:key
-                                  fieldMask:std::move(field_mask_)
-                                      value:data_
-                               precondition:precondition];
-  mutations.push_back(mutation);
-
+  NSMutableArray<FSTMutation*>* mutations = [NSMutableArray array];
+  [mutations
+      addObject:[[FSTPatchMutation alloc] initWithKey:key
+                                            fieldMask:std::move(field_mask_)
+                                                value:data_
+                                         precondition:precondition]];
   if (!field_transforms_.empty()) {
-    FSTMutation* mutation =
-        [[FSTTransformMutation alloc] initWithKey:key
-                                  fieldTransforms:std::move(field_transforms_)];
-    mutations.push_back(mutation);
+    [mutations addObject:[[FSTTransformMutation alloc]
+                                 initWithKey:key
+                             fieldTransforms:std::move(field_transforms_)]];
   }
-
   return mutations;
 }
 

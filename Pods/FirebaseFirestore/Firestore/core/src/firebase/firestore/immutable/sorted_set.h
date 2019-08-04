@@ -20,8 +20,8 @@
 #include <algorithm>
 #include <utility>
 
-#include "Firestore/core/src/firebase/firestore/immutable/sorted_container.h"
 #include "Firestore/core/src/firebase/firestore/immutable/sorted_map.h"
+#include "Firestore/core/src/firebase/firestore/immutable/sorted_map_base.h"
 #include "Firestore/core/src/firebase/firestore/util/comparison.h"
 #include "Firestore/core/src/firebase/firestore/util/hard_assert.h"
 #include "Firestore/core/src/firebase/firestore/util/hashing.h"
@@ -43,10 +43,10 @@ struct Empty {
 }  // namespace impl
 
 template <typename K,
-          typename C = util::Comparator<K>,
           typename V = impl::Empty,
+          typename C = util::Comparator<K>,
           typename M = SortedMap<K, V, C>>
-class SortedSet : public SortedContainer {
+class SortedSet {
  public:
   using size_type = typename M::size_type;
   using value_type = K;
@@ -101,7 +101,7 @@ class SortedSet : public SortedContainer {
     return const_iterator{map_.min()};
   }
 
-  const_iterator max() const {
+  const K& max() const {
     return const_iterator{map_.max()};
   }
 
@@ -146,9 +146,9 @@ class SortedSet : public SortedContainer {
   M map_;
 };
 
-template <typename K, typename C, typename V>
-SortedSet<K, C, V> MakeSortedSet(const SortedMap<K, V, C>& map) {
-  return SortedSet<K, C, V>{map};
+template <typename K, typename V, typename C>
+SortedSet<K, V, C> MakeSortedSet(const SortedMap<K, V, C>& map) {
+  return SortedSet<K, V, C>{map};
 }
 
 }  // namespace immutable

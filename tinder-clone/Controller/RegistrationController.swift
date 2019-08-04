@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import JGProgressHUD
 
 class RegistrationController: UIViewController {
 
@@ -81,10 +83,36 @@ class RegistrationController: UIViewController {
         button.backgroundColor = .lightGray
         button.setTitleColor(.gray, for: .disabled)
         button.isEnabled = false
+        button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
         return button
     }()
 
+    @objc fileprivate func handleRegister() {
+        self.handleTapDismiss()
+        print("Register user in Firebase AUth")
+        
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { (res, err) in
+            
+            if let err = err {
+                print(err.localizedDescription)
+                self.showHUDWithError(error: err)
+                return
+            }
+            
+            print("Successfully register user,", res?.user.uid ?? "")
+        }
+    }
     
+    fileprivate func showHUDWithError(error: Error) {
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Failed Registeration"
+        hud.detailTextLabel.text = error.localizedDescription
+        hud.show(in: self.view)
+        hud.dismiss(afterDelay: 4)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

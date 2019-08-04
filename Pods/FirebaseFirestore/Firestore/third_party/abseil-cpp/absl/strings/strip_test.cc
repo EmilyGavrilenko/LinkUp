@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      https://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This file contains functions that remove a defined part from the string,
-// i.e., strip the string.
+// This file contains functions that remove a defined part from the std::string,
+// i.e., strip the std::string.
 
 #include "absl/strings/strip.h"
 
@@ -26,6 +26,9 @@
 #include "absl/strings/string_view.h"
 
 namespace {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
 
 TEST(Strip, ConsumePrefixOneChar) {
   absl::string_view input("abc");
