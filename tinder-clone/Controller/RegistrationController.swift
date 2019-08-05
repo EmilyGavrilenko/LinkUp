@@ -10,13 +10,11 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-
 extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.originalImage] as? UIImage
         registrationViewModel.bindableImage.value = image
-        //        registrationViewModel.image = image
         dismiss(animated: true, completion: nil)
     }
     
@@ -97,26 +95,21 @@ class RegistrationController: UIViewController {
         return button
     }()
     
-    let registeringHud = JGProgressHUD(style: .dark)
+    let registeringHUD = JGProgressHUD(style: .dark)
     
     @objc fileprivate func handleRegister() {
         self.handleTapDismiss()
-        
-       
-        
-        registrationViewModel.performRegister { [weak self](err) in
+        registrationViewModel.performRegistration { [weak self] (err) in
             if let err = err {
                 self?.showHUDWithError(error: err)
                 return
             }
-            print("Finish register")
+            print("Finished registering our user")
         }
     }
     
-    /// Stoped at 19m ins 
-    
     fileprivate func showHUDWithError(error: Error) {
-        registeringHud.dismiss()
+        registeringHUD.dismiss()
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Failed registration"
         hud.detailTextLabel.text = error.localizedDescription
@@ -147,15 +140,14 @@ class RegistrationController: UIViewController {
         }
         registrationViewModel.bindableImage.bind { [unowned self] (img) in self.selectPhotoButton.setImage(img?.withRenderingMode(.alwaysOriginal), for: .normal)
         }
-        registrationViewModel.bindableIsRegistering.bind { (isRegistering) in
+        registrationViewModel.bindableIsRegistering.bind { [unowned self] (isRegistering) in
             if isRegistering == true {
-                self.registeringHud.textLabel.text = "Register"
-                self.registeringHud.show(in: self.view)
+                self.registeringHUD.textLabel.text = "Register"
+                self.registeringHUD.show(in: self.view)
             } else {
-                self.registeringHud.dismiss()
+                self.registeringHUD.dismiss()
             }
         }
-       
     }
     
     fileprivate func setupTapGesture() {
@@ -173,7 +165,7 @@ class RegistrationController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-       // NotificationCenter.default.removeObserver(self) // you'll have a retain cycle
+        //        NotificationCenter.default.removeObserver(self) // you'll have a retain cycle
     }
     
     @objc fileprivate func handleKeyboardHide() {
@@ -255,44 +247,3 @@ class RegistrationController: UIViewController {
     }
     
 }
-
-
-/*
- Auth.auth().createUser(withEmail: email, password: password) { (res, err) in
- 
- if let err = err {
- print(err)
- self.showHUDWithError(error: err)
- return
- }
- 
- print("Successfully registered user:", res?.user.uid ?? "")
- 
- let filename = UUID().uuidString
- let ref = Storage.storage().reference(withPath: "/images/\(filename)")
- let imageData = self.registrationViewModel.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
- ref.putData(imageData, metadata: nil, completion: { (_, err) in
- 
- if let err = err {
- self.showHUDWithError(error: err)
- return // bail
- }
- 
- print("Finished uploading image to storage")
- ref.downloadURL(completion: { (url, err) in
- if let err = err {
- self.showHUDWithError(error: err)
- return
- }
- 
- self.registrationViewModel.bindableIsRegistering.value = false
- 
- print("Download url of our image is: ", url?.absoluteString ?? "")
- // download url firestore next lesson
- })
- 
- })
- } */
-
-//        guard let email = emailTextField.text else { return }
-//        guard let password = passwordTextField.text else { return }
