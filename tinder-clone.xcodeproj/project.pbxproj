@@ -113,7 +113,6 @@
 			isa = PBXGroup;
 			children = (
 				FE27060922E991A300CA7225 /* tinder-clone */,
-				FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */,
 				FE27060822E991A300CA7225 /* Products */,
 				E2A98724AC0F9D789D8FA7AC /* Pods */,
 				5F861162C5CC4DB79B5118DA /* Frameworks */,
@@ -141,6 +140,7 @@
 				FE27061122E991A400CA7225 /* Assets.xcassets */,
 				FE27061322E991A400CA7225 /* LaunchScreen.storyboard */,
 				FE27061622E991A400CA7225 /* Info.plist */,
+				FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */,
 			);
 			path = "tinder-clone";
 			sourceTree = "<group>";
