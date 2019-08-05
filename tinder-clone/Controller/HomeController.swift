@@ -48,7 +48,7 @@ class HomeController: UIViewController {
             cardView.fillSuperview()
         }
     }
-    
+
     // MARK:- Fileprivate
     
     fileprivate func setupLayout() {
