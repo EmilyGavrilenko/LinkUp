@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         db.settings = settings
         window = UIWindow()
         window?.makeKeyAndVisible()
-        window?.rootViewController = RegistrationController()
+        window?.rootViewController = HomeController()
         
         return true
     }
