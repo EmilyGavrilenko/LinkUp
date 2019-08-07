@@ -7,3 +7,9 @@
 5.Gestures <br />
 6.MVVM Architecture <br />
 7.Swift <br />
+
+## APP Features:
+1. Login and Authentication <br />
+2. Swipe Left and Right and Match <br />
+3. Realtime chat<br />
+4. Filtering<br />
