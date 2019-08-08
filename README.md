@@ -13,3 +13,4 @@
 2. Swipe Left and Right and Match <br />
 3. Realtime chat<br />
 4. Filtering<br />
+5. Fetching documents<br />
