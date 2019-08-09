@@ -1,4 +1,7 @@
 # **Tinder-clone**
+
+## Description: This is a clone version of Tinder Dating App created using programatic UI/ Firestore and with the help of third party liberaries like SDWebImage, JGProgressHUD, LBTATools.
+
 ## Frameworks and Api's used:
 1.Core Animations <br />
 2.Firestore <br />
