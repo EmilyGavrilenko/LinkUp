@@ -20,6 +20,7 @@
 		FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27061D22E993C600CA7225 /* Extensions+UIView.swift */; };
 		FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE27062022E9CC0D00CA7225 /* HomeBottomControlsStackView.swift */; };
 		FE64CF1622FAA92900072CF7 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE64CF1522FAA92900072CF7 /* SettingsController.swift */; };
+		FE694235230A17B400A73D8E /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE694234230A17B400A73D8E /* SettingsCell.swift */; };
 		FE70D57422EC3F7000619811 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE70D57322EC3F7000619811 /* RegistrationController.swift */; };
 		FE70D57622EC470800619811 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE70D57522EC470800619811 /* CustomTextField.swift */; };
 		FE8E5A4A22EBDA3500AE2027 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */; };
@@ -46,6 +47,7 @@
 		FE27061D22E993C600CA7225 /* Extensions+UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extensions+UIView.swift"; sourceTree = "<group>"; };
 		FE27062022E9CC0D00CA7225 /* HomeBottomControlsStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBottomControlsStackView.swift; sourceTree = "<group>"; };
 		FE64CF1522FAA92900072CF7 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		FE694234230A17B400A73D8E /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		FE70D57322EC3F7000619811 /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		FE70D57522EC470800619811 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */,
 				FE14C17D22EAFB77001E6471 /* CardView.swift */,
 				FE70D57522EC470800619811 /* CustomTextField.swift */,
+				FE694234230A17B400A73D8E /* SettingsCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -320,6 +323,7 @@
 				FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */,
 				FE70D57422EC3F7000619811 /* RegistrationController.swift in Sources */,
 				FE14C18122EB18F4001E6471 /* User.swift in Sources */,
+				FE694235230A17B400A73D8E /* SettingsCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
