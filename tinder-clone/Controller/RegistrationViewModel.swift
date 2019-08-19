@@ -31,6 +31,7 @@ class RegistrationViewModel {
                 completion(err)
                 return
             }
+            
             print("Successfully registered user:", res?.user.uid ?? "")
             self.saveImageToFirebase(completion: completion)
         }
@@ -54,13 +55,10 @@ class RegistrationViewModel {
                     return
                 }
                 
-                self.bindableIsRegistering.value = false
-                print("Download url of our image is:", url?.absoluteString ?? "")
-                // store the download url into Firestore next lesson
-                
                 let imageUrl = url?.absoluteString ?? ""
                 self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
             })
+            
         })
     }
     
@@ -68,6 +66,7 @@ class RegistrationViewModel {
         let uid = Auth.auth().currentUser?.uid ?? ""
         let docData = ["fullName": fullName ?? "", "uid": uid, "imageUrl1": imageUrl]
         Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
+            self.bindableIsRegistering.value = false
             if let err = err {
                 completion(err)
                 return

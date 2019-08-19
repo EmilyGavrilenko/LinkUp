@@ -28,7 +28,7 @@ class CardViewModel {
     fileprivate var imageIndex = 0 {
         didSet {
             let imageUrl = imageNames[imageIndex]
-            //let image = UIImage(named: imageName)
+            //            let image = UIImage(named: imageName)
             imageIndexObserver?(imageIndex, imageUrl)
         }
     }
@@ -46,4 +46,3 @@ class CardViewModel {
 }
 
 // what exactly do we do with this card view model thing???
-
