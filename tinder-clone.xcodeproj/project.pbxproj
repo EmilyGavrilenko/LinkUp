@@ -22,6 +22,11 @@
 		FE64CF1622FAA92900072CF7 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE64CF1522FAA92900072CF7 /* SettingsController.swift */; };
 		FE694235230A17B400A73D8E /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE694234230A17B400A73D8E /* SettingsCell.swift */; };
 		FE694237230A2A2100A73D8E /* AgeRangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE694236230A2A2100A73D8E /* AgeRangeCell.swift */; };
+		FE69423B230A43BE00A73D8E /* UserDetailsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE69423A230A43BE00A73D8E /* UserDetailsController.swift */; };
+		FE69423D230A43E200A73D8E /* SwipingPhotosController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE69423C230A43E200A73D8E /* SwipingPhotosController.swift */; };
+		FE69423F230A441900A73D8E /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE69423E230A441900A73D8E /* LoginController.swift */; };
+		FE694241230A443300A73D8E /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE694240230A443300A73D8E /* LoginViewModel.swift */; };
+		FE694243230A449D00A73D8E /* Firebase+Utls.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE694242230A449D00A73D8E /* Firebase+Utls.swift */; };
 		FE70D57422EC3F7000619811 /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE70D57322EC3F7000619811 /* RegistrationController.swift */; };
 		FE70D57622EC470800619811 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE70D57522EC470800619811 /* CustomTextField.swift */; };
 		FE8E5A4A22EBDA3500AE2027 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */; };
@@ -50,6 +55,11 @@
 		FE64CF1522FAA92900072CF7 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		FE694234230A17B400A73D8E /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		FE694236230A2A2100A73D8E /* AgeRangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeRangeCell.swift; sourceTree = "<group>"; };
+		FE69423A230A43BE00A73D8E /* UserDetailsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailsController.swift; sourceTree = "<group>"; };
+		FE69423C230A43E200A73D8E /* SwipingPhotosController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipingPhotosController.swift; sourceTree = "<group>"; };
+		FE69423E230A441900A73D8E /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
+		FE694240230A443300A73D8E /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		FE694242230A449D00A73D8E /* Firebase+Utls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Utls.swift"; sourceTree = "<group>"; };
 		FE70D57322EC3F7000619811 /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		FE70D57522EC470800619811 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
@@ -107,6 +117,8 @@
 		FE14C18522EB22E9001E6471 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				FE694239230A427800A73D8E /* User Details */,
+				FE694238230A426C00A73D8E /* Login */,
 				FE27060C22E991A300CA7225 /* HomeController.swift */,
 				FE70D57322EC3F7000619811 /* RegistrationController.swift */,
 				FE982A2C22F68519008FC9B0 /* RegistrationViewModel.swift */,
@@ -137,10 +149,10 @@
 		FE27060922E991A300CA7225 /* tinder-clone */ = {
 			isa = PBXGroup;
 			children = (
-				FE14C18522EB22E9001E6471 /* Controller */,
-				FE14C18222EB22B3001E6471 /* ViewModels */,
 				FE14C17F22EB18E6001E6471 /* Model */,
 				FE27061F22E9CBE500CA7225 /* Views */,
+				FE14C18522EB22E9001E6471 /* Controller */,
+				FE14C18222EB22B3001E6471 /* ViewModels */,
 				FE27061C22E9939700CA7225 /* Extensions */,
 				FE27060A22E991A300CA7225 /* AppDelegate.swift */,
 				FE27060E22E991A300CA7225 /* Main.storyboard */,
@@ -156,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				FE27061D22E993C600CA7225 /* Extensions+UIView.swift */,
+				FE694242230A449D00A73D8E /* Firebase+Utls.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -171,6 +184,24 @@
 				FE694236230A2A2100A73D8E /* AgeRangeCell.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		FE694238230A426C00A73D8E /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				FE69423E230A441900A73D8E /* LoginController.swift */,
+				FE694240230A443300A73D8E /* LoginViewModel.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		FE694239230A427800A73D8E /* User Details */ = {
+			isa = PBXGroup;
+			children = (
+				FE69423A230A43BE00A73D8E /* UserDetailsController.swift */,
+				FE69423C230A43E200A73D8E /* SwipingPhotosController.swift */,
+			);
+			path = "User Details";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,6 +343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE69423F230A441900A73D8E /* LoginController.swift in Sources */,
 				FE982A3122F6A85D008FC9B0 /* Bindable.swift in Sources */,
 				FE27060D22E991A300CA7225 /* HomeController.swift in Sources */,
 				FE982A2D22F68519008FC9B0 /* RegistrationViewModel.swift in Sources */,
@@ -319,14 +351,18 @@
 				FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */,
 				FE8E5A4A22EBDA3500AE2027 /* Advertiser.swift in Sources */,
 				FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */,
+				FE694241230A443300A73D8E /* LoginViewModel.swift in Sources */,
 				FE694237230A2A2100A73D8E /* AgeRangeCell.swift in Sources */,
 				FE27061E22E993C600CA7225 /* Extensions+UIView.swift in Sources */,
+				FE694243230A449D00A73D8E /* Firebase+Utls.swift in Sources */,
 				FE14C18422EB22E5001E6471 /* CardViewModel.swift in Sources */,
 				FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */,
 				FE64CF1622FAA92900072CF7 /* SettingsController.swift in Sources */,
 				FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */,
 				FE70D57422EC3F7000619811 /* RegistrationController.swift in Sources */,
+				FE69423D230A43E200A73D8E /* SwipingPhotosController.swift in Sources */,
 				FE14C18122EB18F4001E6471 /* User.swift in Sources */,
+				FE69423B230A43BE00A73D8E /* UserDetailsController.swift in Sources */,
 				FE694235230A17B400A73D8E /* SettingsCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

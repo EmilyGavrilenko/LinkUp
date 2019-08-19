@@ -9,6 +9,7 @@
 import UIKit
 
 class AgeRangeCell: UITableViewCell {
+    
     let minSlider: UISlider = {
         let slider = UISlider()
         slider.minimumValue = 18

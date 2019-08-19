@@ -23,3 +23,4 @@ struct Advertiser: ProducesCardViewModel {
 }
 
 
+
