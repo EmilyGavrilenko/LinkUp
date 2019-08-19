@@ -29,7 +29,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     }()
     
     // how do i swap out a UIImageView with a UIViewController component
-    let swipingPhotosController = SwipingPhotosController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    let swipingPhotosController = SwipingPhotosController()
     
     let infoLabel: UILabel = {
         let label = UILabel()
@@ -40,16 +40,16 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     
     let dismissButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "info_icon").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "dismiss_down_arrow").withRenderingMode(.alwaysOriginal), for: .normal)
         button.addTarget(self, action: #selector(handleTapDismiss), for: .touchUpInside)
         return button
     }()
     
     // 3 bottom control buttons
     
-    lazy var dislikeButton = self.createButton(image: #imageLiteral(resourceName: "54797469-b618-491f-88e9-2824221065a6"), selector: #selector(handleDislike))
-    lazy var superLikeButton = self.createButton(image: #imageLiteral(resourceName: "b20a6d9a-233e-46da-bf38-96fdb801b723"), selector: #selector(handleDislike))
-    lazy var likeButton = self.createButton(image: #imageLiteral(resourceName: "49eda04c-035b-475c-bf42-c30a344445f5"), selector: #selector(handleDislike))
+    lazy var dislikeButton = self.createButton(image: #imageLiteral(resourceName: "dismiss_circle"), selector: #selector(handleDislike))
+    lazy var superLikeButton = self.createButton(image: #imageLiteral(resourceName: "super_like_circle"), selector: #selector(handleDislike))
+    lazy var likeButton = self.createButton(image: #imageLiteral(resourceName: "like_circle"), selector: #selector(handleDislike))
     
     @objc fileprivate func handleDislike() {
         print("Disliking")
