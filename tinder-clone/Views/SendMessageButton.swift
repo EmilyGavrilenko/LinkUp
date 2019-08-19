@@ -1,5 +1,5 @@
 //
-//  SendMessageButton.swift
+//  SendMessageButtin.swift
 //  tinder-clone
 //
 //  Created by yash Shelatkar on 19/8/19.
@@ -29,4 +29,3 @@ class SendMessageButton: UIButton {
     }
     
 }
-

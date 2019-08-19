@@ -203,5 +203,4 @@ class CardView: UIView {
     }
     
 }
-
  

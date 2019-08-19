@@ -47,9 +47,9 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     
     // 3 bottom control buttons
     
-    lazy var dislikeButton = self.createButton(image: #imageLiteral(resourceName: "54797469-b618-491f-88e9-2824221065a6"), selector: #selector(handleDislike))
-    lazy var superLikeButton = self.createButton(image: #imageLiteral(resourceName: "b20a6d9a-233e-46da-bf38-96fdb801b723"), selector: #selector(handleDislike))
-    lazy var likeButton = self.createButton(image: #imageLiteral(resourceName: "49eda04c-035b-475c-bf42-c30a344445f5"), selector: #selector(handleDislike))
+    lazy var dislikeButton = self.createButton(image: #imageLiteral(resourceName: "dismiss_circle"), selector: #selector(handleDislike))
+    lazy var superLikeButton = self.createButton(image: #imageLiteral(resourceName: "super_like_circle"), selector: #selector(handleDislike))
+    lazy var likeButton = self.createButton(image: #imageLiteral(resourceName: "like_circle"), selector: #selector(handleDislike))
     
     @objc fileprivate func handleDislike() {
         print("Disliking")
