@@ -29,7 +29,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     }()
     
     // how do i swap out a UIImageView with a UIViewController component
-    let swipingPhotosController = SwipingPhotosController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+    let swipingPhotosController = SwipingPhotosController()
     
     let infoLabel: UILabel = {
         let label = UILabel()
@@ -40,7 +40,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     
     let dismissButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(#imageLiteral(resourceName: "info_icon").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.setImage(#imageLiteral(resourceName: "dismiss_down_arrow").withRenderingMode(.alwaysOriginal), for: .normal)
         button.addTarget(self, action: #selector(handleTapDismiss), for: .touchUpInside)
         return button
     }()
