@@ -125,4 +125,3 @@ class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSou
     }
     
 }
-
