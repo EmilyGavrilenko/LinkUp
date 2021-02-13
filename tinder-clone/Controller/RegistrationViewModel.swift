@@ -34,6 +34,7 @@ class RegistrationViewModel {
         Auth.auth().createUser(withEmail: email, password: password) { (res, err) in
             if let err = err {
                 completion(err)
+                print(err)
                 return
             }
             
@@ -49,6 +50,7 @@ class RegistrationViewModel {
         ref.putData(imageData, metadata: nil, completion: { (_, err) in
             
             if let err = err {
+                print(err)
                 completion(err)
                 return // bail
             }
@@ -80,6 +82,7 @@ class RegistrationViewModel {
         Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
             self.bindableIsRegistering.value = false
             if let err = err {
+                print(err)
                 completion(err)
                 return
             }
