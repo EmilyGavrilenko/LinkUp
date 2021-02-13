@@ -101,10 +101,9 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     var lastFetchedUser: User?
     
     fileprivate func fetchUsersFromFirestore() {
-        let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
-        let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
         
-        let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge).limit(to: 10)
+        let query = Firestore.firestore().collection("users")
+            //.whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge).limit(to: 10)
         topCardView = nil
         query.getDocuments { (snapshot, err) in
             self.hud.dismiss()
@@ -214,7 +213,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 
                 guard let cardUser = self.users[cardUID] else { return }
                 
-                let data = ["name": cardUser.name ?? "", "profileImageUrl": cardUser.imageUrl1 ?? "", "uid": cardUID, "timestamp": Timestamp(date: Date())] as [String : Any]
+                let data = ["name": cardUser.name ?? "", "profileImageUrl": cardUser.imageUrl ?? "", "uid": cardUID, "timestamp": Timestamp(date: Date())] as [String : Any]
                 Firestore.firestore().collection("matches_messages").document(uid).collection("matches").document(cardUID).setData(data, completion: { (err) in
                     if let err = err {
                         print("Failed to save match info:", err)
@@ -223,7 +222,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 
                 guard let currentUser = self.user else { return }
                 
-                let otherMatchData = ["name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl1 ?? "", "uid": currentUser.uid
+                let otherMatchData = ["name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl ?? "", "uid": currentUser.uid
                     ?? "", "timestamp": Timestamp(date: Date())] as [String : Any]
                 Firestore.firestore().collection("matches_messages").document(cardUID).collection("matches").document(uid).setData(otherMatchData, completion: { (err) in
                     if let err = err {

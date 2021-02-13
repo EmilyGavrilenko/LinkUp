@@ -73,13 +73,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
                 
                 print("Finished getting download url:", url?.absoluteString ?? "")
                 
-                if imageButton == self.image1Button {
-                    self.user?.imageUrl1 = url?.absoluteString
-                } else if imageButton == self.image2Button {
-                    self.user?.imageUrl2 = url?.absoluteString
-                } else {
-                    self.user?.imageUrl3 = url?.absoluteString
-                }
+                self.user?.imageUrl = url?.absoluteString
             })
         }
     }
@@ -121,19 +115,9 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     fileprivate func loadUserPhotos() {
-        if let imageUrl = user?.imageUrl1, let url = URL(string: imageUrl) {
+        if let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) {
             SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
                 self.image1Button.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
-            }
-        }
-        if let imageUrl = user?.imageUrl2, let url = URL(string: imageUrl) {
-            SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
-                self.image2Button.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
-            }
-        }
-        if let imageUrl = user?.imageUrl3, let url = URL(string: imageUrl) {
-            SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
-                self.image3Button.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
             }
         }
     }
@@ -147,28 +131,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         return header
     }()
     
-    lazy var skills: UIView = {
-        let skillsView = UIStackView()
-        let skill1 = SettingsCell(style: .default, reuseIdentifier: nil)
-        skillsView.addSubview(skill1)
-        skill1.textField.placeholder = "Skill 1"
-        skill1.textField.text = "SKill 1"
-        skill1.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
-
-        let skill2 = SettingsCell(style: .default, reuseIdentifier: nil)
-        skillsView.addSubview(skill2)
-        skill2.textField.placeholder = "Skill 2"
-        skill2.textField.text = "SKill 2"
-        skill2.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
-
-        skillsView.axis = .vertical
-        skillsView.distribution = .fillEqually
-        skillsView.spacing = 10
-
-//        skillsView.anchor(top: header.topAnchor, leading: image1Button.trailingAnchor, bottom: header.bottomAnchor, trailing: header.trailingAnchor, padding: .init(top: padding, left: padding, bottom: padding, right: padding))
-        return skillsView
-    }()
-    
     class HeaderLabel: UILabel {
         override func drawText(in rect: CGRect) {
             super.drawText(in: rect.insetBy(dx: 16, dy: 0))
@@ -178,9 +140,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0 {
             return header
-        }
-        if section == 5 {
-            return skills
         }
         let headerLabel = HeaderLabel()
         switch section {
@@ -214,41 +173,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         return section == 0 ? 0 : 1
     }
     
-    @objc fileprivate func handleMinAgeChange(slider: UISlider) {
-        //        print(slider.value)
-        // I want to update the minLabel in my AgeRangeCell somehow...
-        //        let indexPath = IndexPath(row: 0, section: 5)
-        //        let ageRangeCell = tableView.cellForRow(at: indexPath) as! AgeRangeCell
-        //        ageRangeCell.minLabel.text = "Min \(Int(slider.value))"
-        //
-        //        self.user?.minSeekingAge = Int(slider.value)
-        evaluateMinMax()
-    }
-    
-    @objc fileprivate func handleMaxAgeChange(slider: UISlider) {
-        //        let indexPath = IndexPath(row: 0, section: 5)
-        //        let ageRangeCell = tableView.cellForRow(at: indexPath) as! AgeRangeCell
-        //        ageRangeCell.maxLabel.text = "Max \(Int(slider.value))"
-        //        self.user?.maxSeekingAge = Int(slider.value)
-        evaluateMinMax()
-    }
-    
-    fileprivate func evaluateMinMax() {
-        guard let ageRangeCell = tableView.cellForRow(at: [4, 0]) as? AgeRangeCell else { return }
-        let minValue = Int(ageRangeCell.minSlider.value)
-        var maxValue = Int(ageRangeCell.maxSlider.value)
-        maxValue = max(minValue, maxValue)
-        ageRangeCell.maxSlider.value = Float(maxValue)
-        ageRangeCell.minLabel.text = "Min \(minValue)"
-        ageRangeCell.maxLabel.text = "Max \(maxValue)"
-        
-        user?.minSeekingAge = minValue
-        user?.maxSeekingAge = maxValue
-    }
-    
-    static let defaultMinSeekingAge = 18
-    static let defaultMaxSeekingAge = 50
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         // age range cell
@@ -267,21 +191,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
 //            return ageRangeCell
 //        }
         
-        if indexPath.section == 5 {
-                let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
-                ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
-                ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
-                // we need to set up the labels on our cell here
-                let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
-                let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
-    
-                ageRangeCell.minLabel.text = "Min \(minAge)"
-                ageRangeCell.maxLabel.text = "Max \(maxAge)"
-                ageRangeCell.minSlider.value = Float(minAge)
-                ageRangeCell.maxSlider.value = Float(maxAge)
-                return ageRangeCell
-            }
-        
         let cell = SettingsCell(style: .default, reuseIdentifier: nil)
         
         switch indexPath.section {
@@ -291,35 +200,53 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             cell.textField.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
         case 2:
             cell.textField.placeholder = "Enter College"
-            cell.textField.text = user?.profession
-            cell.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
+            cell.textField.text = user?.college
+            cell.textField.addTarget(self, action: #selector(handleCollegeChange), for: .editingChanged)
         case 3:
-            cell.textField.placeholder = "Enter Skills"
-            cell.textField.addTarget(self, action: #selector(handleAgeChange), for: .editingChanged)
-            if let age = user?.age {
-                cell.textField.text = String(age)
-            }
+            cell.textField.placeholder = "Enter Major"
+            cell.textField.text = user?.major
+            cell.textField.addTarget(self, action: #selector(handleMajorChange), for: .editingChanged)
         case 4:
             cell.textField.placeholder = "Enter committment"
-            cell.textField.text = user?.profession
-            cell.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
+            cell.textField.text = user?.committment
+            cell.textField.addTarget(self, action: #selector(handleCommittmentChange), for: .editingChanged)
         default:
             cell.textField.placeholder = "Enter Bio"
+            cell.textField.text = user?.bio
+            cell.textField.addTarget(self, action: #selector(handleBioChange), for: .editingChanged)
         }
         
         return cell
     }
     
+//    @objc fileprivate func handleTextChange(textField: UITextField) {
+//        if textField == fullNameTextField {
+//            registrationViewModel.fullName = textField.text
+//        } else if textField == emailTextField {
+//            registrationViewModel.email = textField.text
+//        } else {
+//            registrationViewModel.password = textField.text
+//        }
+//    }
+    
     @objc fileprivate func handleNameChange(textField: UITextField) {
         self.user?.name = textField.text
     }
     
-    @objc fileprivate func handleProfessionChange(textField: UITextField) {
-        self.user?.profession = textField.text
+    @objc fileprivate func handleMajorChange(textField: UITextField) {
+        self.user?.major = textField.text
     }
     
-    @objc fileprivate func handleAgeChange(textField: UITextField) {
-        self.user?.age = Int(textField.text ?? "")
+    @objc fileprivate func handleCommittmentChange(textField: UITextField) {
+        self.user?.committment = textField.text
+    }
+    
+    @objc fileprivate func handleCollegeChange(textField: UITextField) {
+        self.user?.college = textField.text
+    }
+    
+    @objc fileprivate func handleBioChange(textField: UITextField) {
+        self.user?.bio = textField.text
     }
     
     fileprivate func setupNavigationItems() {
@@ -343,13 +270,11 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         let docData: [String: Any] = [
             "uid": uid,
             "fullName": user?.name ?? "",
-            "imageUrl1": user?.imageUrl1 ?? "",
-            "imageUrl2": user?.imageUrl2 ?? "",
-            "imageUrl3": user?.imageUrl3 ?? "",
-            "age": user?.age ?? -1,
-            "profession": user?.profession ?? "",
-            "minSeekingAge": user?.minSeekingAge ?? -1,
-            "maxSeekingAge": user?.maxSeekingAge ?? -1
+            "college": user?.college ?? "",
+            "major": user?.major ?? "",
+            "committment": user?.committment ?? "",
+            "bio": user?.bio ?? -1,
+            "imageUrl": user?.imageUrl ?? "",
         ]
         
         let hud = JGProgressHUD(style: .dark)
@@ -366,7 +291,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             self.dismiss(animated: true, completion: {
                 print("Dismissal complete")
                 self.delegate?.didSaveSettings()
-                //                homeController.fetchCurrentUser() // I want to refetch my cards inside of homeController somehow
             })
         }
     }

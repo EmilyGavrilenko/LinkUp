@@ -50,7 +50,7 @@ class RegistrationViewModel {
         ref.putData(imageData, metadata: nil, completion: { (_, err) in
             
             if let err = err {
-                print(err)
+                print("Error saving image to firebase")
                 completion(err)
                 return // bail
             }
@@ -74,10 +74,11 @@ class RegistrationViewModel {
         let docData: [String : Any] = [
             "fullName": fullName ?? "",
             "uid": uid,
-            "imageUrl1": imageUrl,
-            "age": 18,
-            "minSeekingAge": SettingsController.defaultMinSeekingAge,
-            "maxSeekingAge": SettingsController.defaultMaxSeekingAge
+            "imageUrl": imageUrl,
+            "committment": "high",
+            "college": "Cal Poly SLO",
+            "major": "Computer Science",
+            "bio": "I'm awesome"
         ]
         Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
             self.bindableIsRegistering.value = false

@@ -15,11 +15,12 @@ class SettingsModel {
     var bindableImage = Bindable<UIImage>()
     var bindableIsFormValid = Bindable<Bool>()
     
-    var fullName: String? {
-        didSet {
-            checkFormValidity()
-        }
-    }
+    var fullName: String? { didSet { checkFormValidity() } }
+    var committment: String? { didSet { checkFormValidity() } }
+    var college: String? { didSet { checkFormValidity() } }
+    var major: String? { didSet { checkFormValidity() } }
+    var bio: String? { didSet { checkFormValidity() } }
+    
     var email: String? { didSet { checkFormValidity() } }
     var password: String? { didSet { checkFormValidity() } }
     
@@ -72,10 +73,11 @@ class SettingsModel {
         let docData: [String : Any] = [
             "fullName": fullName ?? "",
             "uid": uid,
-            "imageUrl1": imageUrl,
-            "age": 18,
-            "minSeekingAge": SettingsController.defaultMinSeekingAge,
-            "maxSeekingAge": SettingsController.defaultMaxSeekingAge
+            "imageUrl": imageUrl ?? "",
+            "committment": committment ?? "",
+            "college": college ?? "",
+            "major": major ?? "",
+            "bio": bio ?? "",
         ]
         Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
             self.bindableIsRegistering.value = false

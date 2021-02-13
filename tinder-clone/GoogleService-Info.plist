@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>986790390020-1dkh82dqn1l2ttk5efb6t2cdseq1jmph.apps.googleusercontent.com</string>
+	<string>374273813302-hjld6mpo4vqr7cr2qc5dt3jbp2gnpral.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.986790390020-1dkh82dqn1l2ttk5efb6t2cdseq1jmph</string>
+	<string>com.googleusercontent.apps.374273813302-hjld6mpo4vqr7cr2qc5dt3jbp2gnpral</string>
 	<key>API_KEY</key>
-	<string>AIzaSyA_V2UT6ySWU2zsj9W6sF2-H0c-ZdRZ5wI</string>
+	<string>AIzaSyBbj6gSU2u6XQTitgJMxxtY7Gt6Ly4WCcg</string>
 	<key>GCM_SENDER_ID</key>
-	<string>986790390020</string>
+	<string>374273813302</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.shelatkaryash.tinder-clone</string>
+	<string>LinkUp-TreeHacks</string>
 	<key>PROJECT_ID</key>
-	<string>tinder-clone-1d6c3</string>
+	<string>linkup-304703</string>
 	<key>STORAGE_BUCKET</key>
-	<string>tinder-clone-1d6c3.appspot.com</string>
+	<string>linkup-304703.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:986790390020:ios:df07e954d40a80fd</string>
+	<string>1:374273813302:ios:87fb175dc356c9aa972197</string>
 	<key>DATABASE_URL</key>
-	<string>https://tinder-clone-1d6c3.firebaseio.com</string>
+	<string>https://linkup-304703-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

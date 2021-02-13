@@ -28,6 +28,10 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
 class RegistrationController: UIViewController {
     
     var delegate: LoginControllerDelegate?
+    let primaryColor = UIColor(named: "PrimaryColor")
+    let secondaryColor = UIColor(named: "SecondaryColor")
+    let tertiaryColor = UIColor(named: "TertiaryColor")
+    let quadraryColor = UIColor(named: "QuadraryColor")
     
     // UI Components
     let selectPhotoButton: UIButton = {
@@ -142,7 +146,7 @@ class RegistrationController: UIViewController {
         registrationViewModel.bindableIsFormValid.bind { [unowned self] (isFormValid) in
             guard let isFormValid = isFormValid else { return }
             self.registerButton.isEnabled = isFormValid
-            self.registerButton.backgroundColor = isFormValid ? #colorLiteral(red: 0.8235294118, green: 0, blue: 0.3254901961, alpha: 1) : .lightGray
+            self.registerButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
             self.registerButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
         }
         registrationViewModel.bindableImage.bind { [unowned self] (img) in self.selectPhotoButton.setImage(img?.withRenderingMode(.alwaysOriginal), for: .normal)
@@ -264,10 +268,10 @@ class RegistrationController: UIViewController {
     
     fileprivate func setupGradientLayer() {
         
-        let topColor = #colorLiteral(red: 0.9921568627, green: 0.3568627451, blue: 0.3725490196, alpha: 1)
-        let bottomColor = #colorLiteral(red: 0.8980392157, green: 0, blue: 0.4470588235, alpha: 1)
+        let topColor = primaryColor?.cgColor
+        let bottomColor = tertiaryColor?.cgColor
         // make sure to user cgColor
-        gradientLayer.colors = [topColor.cgColor, bottomColor.cgColor]
+        gradientLayer.colors = [topColor, bottomColor]
         gradientLayer.locations = [0, 1]
         view.layer.addSublayer(gradientLayer)
         gradientLayer.frame = view.bounds

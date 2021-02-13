@@ -57,7 +57,7 @@ class ChatLogController: LBTAListController<MessageCell, Message>, UICollectionV
         
         // save the other direction
         guard let currentUser = self.currentUser else { return }
-        let toData = ["text": customInputView.textView.text ?? "", "name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl1 ?? "", "timestamp": Timestamp(date: Date()), "uid": currentUserId] as [String : Any]
+        let toData = ["text": customInputView.textView.text ?? "", "name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl ?? "", "timestamp": Timestamp(date: Date()), "uid": currentUserId] as [String : Any]
         
         Firestore.firestore().collection("matches_messages").document(match.uid).collection("recent_messages").document(currentUserId).setData(toData)
     }

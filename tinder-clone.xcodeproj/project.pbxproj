@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7C7EFD1225D85D0200754881 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7C7EFD1125D85D0200754881 /* GoogleService-Info.plist */; };
 		7CF025FE25D838E900356303 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF025FD25D838E900356303 /* SettingsModel.swift */; };
 		DC32E4FEC01B5F4BED08454E /* Pods_tinder_clone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 881F79F8140F8FD32D810E06 /* Pods_tinder_clone.framework */; };
 		FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */; };
@@ -48,12 +49,12 @@
 		FE70D57622EC470800619811 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE70D57522EC470800619811 /* CustomTextField.swift */; };
 		FE8E5A4A22EBDA3500AE2027 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */; };
 		FE982A2D22F68519008FC9B0 /* RegistrationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE982A2C22F68519008FC9B0 /* RegistrationViewModel.swift */; };
-		FE982A2F22F68E5A008FC9B0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */; };
 		FE982A3122F6A85D008FC9B0 /* Bindable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE982A3022F6A85D008FC9B0 /* Bindable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		28C74067CE8F54A7546E34A0 /* Pods-tinder-clone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tinder-clone.release.xcconfig"; path = "Pods/Target Support Files/Pods-tinder-clone/Pods-tinder-clone.release.xcconfig"; sourceTree = "<group>"; };
+		7C7EFD1125D85D0200754881 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7CF025FD25D838E900356303 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		881F79F8140F8FD32D810E06 /* Pods_tinder_clone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_tinder_clone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D83369DFF9FA80F6A5E5D497 /* Pods-tinder-clone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tinder-clone.debug.xcconfig"; path = "Pods/Target Support Files/Pods-tinder-clone/Pods-tinder-clone.debug.xcconfig"; sourceTree = "<group>"; };
@@ -98,7 +99,6 @@
 		FE70D57522EC470800619811 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		FE8E5A4922EBDA3500AE2027 /* Advertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
 		FE982A2C22F68519008FC9B0 /* RegistrationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewModel.swift; sourceTree = "<group>"; };
-		FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FE982A3022F6A85D008FC9B0 /* Bindable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -207,7 +207,7 @@
 				FE27061122E991A400CA7225 /* Assets.xcassets */,
 				FE27061322E991A400CA7225 /* LaunchScreen.storyboard */,
 				FE27061622E991A400CA7225 /* Info.plist */,
-				FE982A2E22F68E5A008FC9B0 /* GoogleService-Info.plist */,
+				7C7EFD1125D85D0200754881 /* GoogleService-Info.plist */,
 			);
 			path = "tinder-clone";
 			sourceTree = "<group>";
@@ -341,8 +341,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FE27061522E991A400CA7225 /* LaunchScreen.storyboard in Resources */,
+				7C7EFD1225D85D0200754881 /* GoogleService-Info.plist in Resources */,
 				FE27061222E991A400CA7225 /* Assets.xcassets in Resources */,
-				FE982A2F22F68E5A008FC9B0 /* GoogleService-Info.plist in Resources */,
 				FE27061022E991A300CA7225 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

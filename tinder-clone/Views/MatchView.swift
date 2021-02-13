@@ -28,10 +28,10 @@ class MatchView: UIView {
                 
                 guard let dictionary = snapshot?.data() else { return }
                 let user = User(dictionary: dictionary)
-                guard let url = URL(string: user.imageUrl1 ?? "") else { return }
+                guard let url = URL(string: user.imageUrl ?? "") else { return }
                 self.cardUserImageView.sd_setImage(with: url)
                 
-                guard let currentUserImageUrl = URL(string: self.currentUser.imageUrl1 ?? "") else { return }
+                guard let currentUserImageUrl = URL(string: self.currentUser.imageUrl ?? "") else { return }
                 
                 self.currentUserImageView.sd_setImage(with: currentUserImageUrl, completed: { (_, _, _, _) in
                     self.setupAnimations()
