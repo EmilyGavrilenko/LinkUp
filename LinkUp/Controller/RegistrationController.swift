@@ -97,7 +97,7 @@ class RegistrationController: UIViewController {
         button.setTitleColor(.gray, for: .disabled)
         button.isEnabled = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button.layer.cornerRadius = 22
+        button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(handleRegister), for: .touchUpInside)
         return button
     }()
@@ -125,7 +125,7 @@ class RegistrationController: UIViewController {
         hud.textLabel.text = "Failed registration"
         hud.detailTextLabel.text = error.localizedDescription
         hud.show(in: self.view)
-        hud.dismiss(afterDelay: 4)
+        hud.dismiss(afterDelay: 2)
     }
     
     override func viewDidLoad() {
@@ -207,7 +207,7 @@ class RegistrationController: UIViewController {
             registerButton
             ])
         sv.axis = .vertical
-        sv.spacing = 8
+        sv.spacing = 12
         return sv
     }()
     
@@ -251,7 +251,7 @@ class RegistrationController: UIViewController {
         view.addSubview(overallStackView)
         
         overallStackView.axis = .vertical
-        overallStackView.spacing = 8
+        overallStackView.spacing = 16
         overallStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
         overallStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         

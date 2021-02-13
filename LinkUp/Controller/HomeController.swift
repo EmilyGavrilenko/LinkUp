@@ -45,6 +45,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         print("HomeController did appear")
         // you want to kick the user out when they log out
         if Auth.auth().currentUser == nil {
+            print("Auth user is nil")
             let registrationController = RegistrationController()
             registrationController.delegate = self
             let navController = UINavigationController(rootViewController: registrationController)
