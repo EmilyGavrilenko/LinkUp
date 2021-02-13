@@ -250,8 +250,11 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     @objc fileprivate func handleLogout() {
         do {
             try Auth.auth().signOut()
-            print("Loggin out")
-            navigationController?.popToRootViewController(animated: true)
+            print("Logging out")
+            var loginDelegate: LoginControllerDelegate?
+            let loginController = LoginController()
+            loginController.delegate = loginDelegate
+            navigationController?.pushViewController(loginController, animated: true)
         }
         catch {
             print("already logged out")

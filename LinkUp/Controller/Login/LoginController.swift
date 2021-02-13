@@ -18,6 +18,7 @@ class LoginController: UIViewController {
     let primaryColor = UIColor(named: "PrimaryColor")
     let tertiaryColor = UIColor(named: "TertiaryColor")
     let quadraryColor = UIColor(named: "QuadraryColor")
+    let textColor = UIColor(named: "TextColor")
     
     var delegate: LoginControllerDelegate?
     
@@ -43,7 +44,7 @@ class LoginController: UIViewController {
             loginButton
             ])
         sv.axis = .vertical
-        sv.spacing = 8
+        sv.spacing = 12
         return sv
     }()
     
@@ -64,7 +65,7 @@ class LoginController: UIViewController {
         button.setTitleColor(.gray, for: .disabled)
         button.isEnabled = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button.layer.cornerRadius = 22
+        button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
         return button
     }()
@@ -118,7 +119,7 @@ class LoginController: UIViewController {
         }
         loginViewModel.isLoggingIn.bind { [unowned self] (isRegistering) in
             if isRegistering == true {
-                self.loginHUD.textLabel.text = "Register"
+                self.loginHUD.textLabel.text = "Logging In"
                 self.loginHUD.show(in: self.view)
             } else {
                 self.loginHUD.dismiss()
