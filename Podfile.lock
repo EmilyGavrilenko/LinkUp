@@ -33,7 +33,7 @@ PODS:
     - FirebaseCore (~> 5.0)
     - GoogleUtilities/Environment (~> 5.2)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseAuthInterop (1.0.0)
+  - FirebaseAuthInterop (1.1.0)
   - FirebaseCore (5.1.5):
     - GoogleUtilities/Logger (~> 5.2)
   - FirebaseFirestore (0.13.5):
@@ -114,19 +114,19 @@ PODS:
   - gRPC/Main (1.21.0):
     - gRPC-Core (= 1.21.0)
     - gRPC-RxLibrary (= 1.21.0)
-  - GTMSessionFetcher/Core (1.2.2)
-  - JGProgressHUD (2.0.3)
-  - LBTATools (1.0.8)
-  - leveldb-library (1.20)
-  - nanopb (0.3.901):
-    - nanopb/decode (= 0.3.901)
-    - nanopb/encode (= 0.3.901)
-  - nanopb/decode (0.3.901)
-  - nanopb/encode (0.3.901)
-  - Protobuf (3.9.0)
-  - SDWebImage (4.4.7):
-    - SDWebImage/Core (= 4.4.7)
-  - SDWebImage/Core (4.4.7)
+  - GTMSessionFetcher/Core (1.5.0)
+  - JGProgressHUD (2.0.4)
+  - LBTATools (1.0.12)
+  - leveldb-library (1.22)
+  - nanopb (0.3.9011):
+    - nanopb/decode (= 0.3.9011)
+    - nanopb/encode (= 0.3.9011)
+  - nanopb/decode (0.3.9011)
+  - nanopb/encode (0.3.9011)
+  - Protobuf (3.14.0)
+  - SDWebImage (4.4.8):
+    - SDWebImage/Core (= 4.4.8)
+  - SDWebImage/Core (4.4.8)
 
 DEPENDENCIES:
   - Firebase/Auth (~> 5.10.0)
@@ -169,7 +169,7 @@ SPEC CHECKSUMS:
   Firebase: 6691d47562a780c26281ce8464518faafc90c610
   FirebaseAnalytics: 831f1f127f4a75698e9875a87bf7e2668730d953
   FirebaseAuth: 504b198ceb3472dca5c65bb95544ea44cfc9439e
-  FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
+  FirebaseAuthInterop: a0f37ae05833af156e72028f648d313f7e7592e9
   FirebaseCore: c6079de64c1a87000e52e9b408dddcadc901177f
   FirebaseFirestore: 45a9a3045a2dc27f23c13bf832556fe287fbe1b5
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
@@ -181,14 +181,14 @@ SPEC CHECKSUMS:
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   gRPC-ProtoRPC: fea7d2bb51ddd0ae6b5c5ea27033018f564084d0
   gRPC-RxLibrary: b0eb67f4f0f4c9cdfa6a73ea2b435a3efa77f1ef
-  GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
-  JGProgressHUD: 12b20a8f4ffe05258f8635c1ab92816e451f904d
-  LBTATools: 913ba0a3fbad250d042368ca2a0f314cdb015de1
-  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
-  SDWebImage: c10d14a8883ebd89664f02a422006f66a85c0c5d
+  GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
+  JGProgressHUD: 62658b14e72cccf179efc7a13bcb54d30b92fc22
+  LBTATools: 389a901a01b9a56bea5682c40cd6e23530f40015
+  leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
+  nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
+  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
+  SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
 
-PODFILE CHECKSUM: 61e90f81e3673a4a3311316ef3456f0ad01f6dc0
+PODFILE CHECKSUM: 5e52c42737848310a6b768901e3f15f60b21b9c7
 
 COCOAPODS: 1.10.1
