@@ -144,15 +144,29 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         let padding: CGFloat = 16
         image1Button.anchor(top: header.topAnchor, leading: header.leadingAnchor, bottom: header.bottomAnchor, trailing: nil, padding: .init(top: padding, left: padding, bottom: padding, right: 0))
         image1Button.widthAnchor.constraint(equalTo: header.widthAnchor, multiplier: 0.45).isActive = true
-        
-        let stackView = UIStackView(arrangedSubviews: [image2Button, image3Button])
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.spacing = padding
-        
-        header.addSubview(stackView)
-        stackView.anchor(top: header.topAnchor, leading: image1Button.trailingAnchor, bottom: header.bottomAnchor, trailing: header.trailingAnchor, padding: .init(top: padding, left: padding, bottom: padding, right: padding))
         return header
+    }()
+    
+    lazy var skills: UIView = {
+        let skillsView = UIStackView()
+        let skill1 = SettingsCell(style: .default, reuseIdentifier: nil)
+        skillsView.addSubview(skill1)
+        skill1.textField.placeholder = "Skill 1"
+        skill1.textField.text = "SKill 1"
+        skill1.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
+
+        let skill2 = SettingsCell(style: .default, reuseIdentifier: nil)
+        skillsView.addSubview(skill2)
+        skill2.textField.placeholder = "Skill 2"
+        skill2.textField.text = "SKill 2"
+        skill2.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
+
+        skillsView.axis = .vertical
+        skillsView.distribution = .fillEqually
+        skillsView.spacing = 10
+
+//        skillsView.anchor(top: header.topAnchor, leading: image1Button.trailingAnchor, bottom: header.bottomAnchor, trailing: header.trailingAnchor, padding: .init(top: padding, left: padding, bottom: padding, right: padding))
+        return skillsView
     }()
     
     class HeaderLabel: UILabel {
@@ -165,18 +179,21 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         if section == 0 {
             return header
         }
+        if section == 5 {
+            return skills
+        }
         let headerLabel = HeaderLabel()
         switch section {
         case 1:
             headerLabel.text = "Name"
         case 2:
-            headerLabel.text = "Profession"
+            headerLabel.text = "College"
         case 3:
-            headerLabel.text = "Age"
+            headerLabel.text = "Major"
         case 4:
-            headerLabel.text = "Bio"
+            headerLabel.text = "Committment"
         default:
-            headerLabel.text = "Seeking Age Range"
+            headerLabel.text = "Bio"
         }
         headerLabel.font = UIFont.boldSystemFont(ofSize: 16)
         return headerLabel
@@ -217,7 +234,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     fileprivate func evaluateMinMax() {
-        guard let ageRangeCell = tableView.cellForRow(at: [5, 0]) as? AgeRangeCell else { return }
+        guard let ageRangeCell = tableView.cellForRow(at: [4, 0]) as? AgeRangeCell else { return }
         let minValue = Int(ageRangeCell.minSlider.value)
         var maxValue = Int(ageRangeCell.maxSlider.value)
         maxValue = max(minValue, maxValue)
@@ -235,20 +252,35 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         // age range cell
+//        if indexPath.section == 5 {
+//            let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
+//            ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
+//            ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
+//            // we need to set up the labels on our cell here
+//            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
+//            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+//
+//            ageRangeCell.minLabel.text = "Min \(minAge)"
+//            ageRangeCell.maxLabel.text = "Max \(maxAge)"
+//            ageRangeCell.minSlider.value = Float(minAge)
+//            ageRangeCell.maxSlider.value = Float(maxAge)
+//            return ageRangeCell
+//        }
+        
         if indexPath.section == 5 {
-            let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
-            ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
-            ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
-            // we need to set up the labels on our cell here
-            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
-            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
-            
-            ageRangeCell.minLabel.text = "Min \(minAge)"
-            ageRangeCell.maxLabel.text = "Max \(maxAge)"
-            ageRangeCell.minSlider.value = Float(minAge)
-            ageRangeCell.maxSlider.value = Float(maxAge)
-            return ageRangeCell
-        }
+                let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
+                ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
+                ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
+                // we need to set up the labels on our cell here
+                let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
+                let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+    
+                ageRangeCell.minLabel.text = "Min \(minAge)"
+                ageRangeCell.maxLabel.text = "Max \(maxAge)"
+                ageRangeCell.minSlider.value = Float(minAge)
+                ageRangeCell.maxSlider.value = Float(maxAge)
+                return ageRangeCell
+            }
         
         let cell = SettingsCell(style: .default, reuseIdentifier: nil)
         
@@ -258,15 +290,19 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             cell.textField.text = user?.name
             cell.textField.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
         case 2:
-            cell.textField.placeholder = "Enter Profession"
+            cell.textField.placeholder = "Enter College"
             cell.textField.text = user?.profession
             cell.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
         case 3:
-            cell.textField.placeholder = "Enter Age"
+            cell.textField.placeholder = "Enter Skills"
             cell.textField.addTarget(self, action: #selector(handleAgeChange), for: .editingChanged)
             if let age = user?.age {
                 cell.textField.text = String(age)
             }
+        case 4:
+            cell.textField.placeholder = "Enter committment"
+            cell.textField.text = user?.profession
+            cell.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
         default:
             cell.textField.placeholder = "Enter Bio"
         }

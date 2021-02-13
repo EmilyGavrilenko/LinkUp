@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7CF025FE25D838E900356303 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF025FD25D838E900356303 /* SettingsModel.swift */; };
 		DC32E4FEC01B5F4BED08454E /* Pods_tinder_clone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 881F79F8140F8FD32D810E06 /* Pods_tinder_clone.framework */; };
 		FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */; };
 		FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE14C17D22EAFB77001E6471 /* CardView.swift */; };
@@ -53,6 +54,7 @@
 
 /* Begin PBXFileReference section */
 		28C74067CE8F54A7546E34A0 /* Pods-tinder-clone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tinder-clone.release.xcconfig"; path = "Pods/Target Support Files/Pods-tinder-clone/Pods-tinder-clone.release.xcconfig"; sourceTree = "<group>"; };
+		7CF025FD25D838E900356303 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		881F79F8140F8FD32D810E06 /* Pods_tinder_clone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_tinder_clone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D83369DFF9FA80F6A5E5D497 /* Pods-tinder-clone.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tinder-clone.debug.xcconfig"; path = "Pods/Target Support Files/Pods-tinder-clone/Pods-tinder-clone.debug.xcconfig"; sourceTree = "<group>"; };
 		FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNavigationStackView.swift; sourceTree = "<group>"; };
@@ -120,6 +122,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		7CF025F625D8388200356303 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				FE64CF1522FAA92900072CF7 /* SettingsController.swift */,
+				FE694234230A17B400A73D8E /* SettingsCell.swift */,
+				7CF025FD25D838E900356303 /* SettingsModel.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		E2A98724AC0F9D789D8FA7AC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -152,6 +164,7 @@
 		FE14C18522EB22E9001E6471 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				7CF025F625D8388200356303 /* Settings */,
 				FE5F5F6C230AA0270001E6A1 /* MatchedMessages */,
 				FE694239230A427800A73D8E /* User Details */,
 				FE694238230A426C00A73D8E /* Login */,
@@ -159,7 +172,6 @@
 				FE70D57322EC3F7000619811 /* RegistrationController.swift */,
 				FE982A2C22F68519008FC9B0 /* RegistrationViewModel.swift */,
 				FE982A3022F6A85D008FC9B0 /* Bindable.swift */,
-				FE64CF1522FAA92900072CF7 /* SettingsController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -216,7 +228,6 @@
 				FE14C17B22EAF452001E6471 /* TopNavigationStackView.swift */,
 				FE14C17D22EAFB77001E6471 /* CardView.swift */,
 				FE70D57522EC470800619811 /* CustomTextField.swift */,
-				FE694234230A17B400A73D8E /* SettingsCell.swift */,
 				FE694236230A2A2100A73D8E /* AgeRangeCell.swift */,
 				FE5F5F88230AA3910001E6A1 /* MatchView.swift */,
 				FE5F5F8A230AA3AB0001E6A1 /* SendMessageButton.swift */,
@@ -344,43 +355,16 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-tinder-clone/Pods-tinder-clone-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/BoringSSL-GRPC/openssl_grpc.framework",
-				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
-				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/JGProgressHUD/JGProgressHUD.framework",
-				"${BUILT_PRODUCTS_DIR}/LBTATools/LBTATools.framework",
-				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC/GRPCClient.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-ProtoRPC/ProtoRPC.framework",
-				"${BUILT_PRODUCTS_DIR}/gRPC-RxLibrary/RxLibrary.framework",
-				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
-				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-tinder-clone/Pods-tinder-clone-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl_grpc.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JGProgressHUD.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LBTATools.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPCClient.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtoRPC.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxLibrary.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-tinder-clone/Pods-tinder-clone-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-tinder-clone/Pods-tinder-clone-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-tinder-clone/Pods-tinder-clone-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C4C2ECE3DB1DD7C6A57DE5EC /* [CP] Check Pods Manifest.lock */ = {
@@ -428,6 +412,7 @@
 				FE694241230A443300A73D8E /* LoginViewModel.swift in Sources */,
 				FE694237230A2A2100A73D8E /* AgeRangeCell.swift in Sources */,
 				FE5F5F7B230AA1020001E6A1 /* MatchCell.swift in Sources */,
+				7CF025FE25D838E900356303 /* SettingsModel.swift in Sources */,
 				FE694243230A449D00A73D8E /* Firebase+Utls.swift in Sources */,
 				FE14C18422EB22E5001E6471 /* CardViewModel.swift in Sources */,
 				FE5F5F89230AA3910001E6A1 /* MatchView.swift in Sources */,
@@ -592,14 +577,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SYTJT45T2T;
+				DEVELOPMENT_TEAM = STFSC6W373;
+				EXCLUDED_ARCHS = "";
 				INFOPLIST_FILE = "tinder-clone/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.shelatkaryash.tinder-clone";
+				PRODUCT_BUNDLE_IDENTIFIER = TreeHacks;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -612,14 +598,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = SYTJT45T2T;
+				DEVELOPMENT_TEAM = STFSC6W373;
+				EXCLUDED_ARCHS = "";
 				INFOPLIST_FILE = "tinder-clone/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.shelatkaryash.tinder-clone";
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = TreeHacks;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

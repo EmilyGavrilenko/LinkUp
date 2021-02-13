@@ -139,7 +139,7 @@ DEPENDENCIES:
   - SDWebImage (~> 4.4.2)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - BoringSSL-GRPC
     - Firebase
     - FirebaseAnalytics
@@ -191,4 +191,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 61e90f81e3673a4a3311316ef3456f0ad01f6dc0
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.10.1
