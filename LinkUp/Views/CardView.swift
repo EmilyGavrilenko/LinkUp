@@ -94,15 +94,18 @@ class CardView: UIView {
         
         let swipingPhotosView = swipingPhotosController.view!
         addSubview(swipingPhotosView)
+        swipingPhotosView.fillSuperview()
         
+        //        setupBarsStackView()
+        
+        // add a gradient layer somehow
+        setupGradientLayer()
         
         addSubview(informationLabel)
-        informationLabel.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
+        informationLabel.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
         
-        informationLabel.textColor = .black
+        informationLabel.textColor = .white
         informationLabel.numberOfLines = 0
-        let screenSize: CGRect = UIScreen.main.bounds
-        informationLabel.topAnchor.constraint(equalTo: topAnchor, constant: screenSize.width + 20).isActive = true
         
         addSubview(moreInfoButton)
         moreInfoButton.anchor(top: nil, leading: nil, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 16), size: .init(width: 44, height: 44))
