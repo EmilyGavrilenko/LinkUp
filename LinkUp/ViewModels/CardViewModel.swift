@@ -16,37 +16,23 @@ protocol ProducesCardViewModel {
 class CardViewModel {
     // we'll define the properties that are view will display/render out
     let uid: String
-    let imageUrls: [String]
+    let imageUrl: String
     let attributedString: NSAttributedString
     let textAlignment: NSTextAlignment
+    let idea: String
+    let commitment: String
+    let hackathon: String
+    let skills: [String]
     
-    init(uid: String, imageNames: [String], attributedString: NSAttributedString, textAlignment: NSTextAlignment) {
+    init(uid: String, imageName: String, attributedString: NSAttributedString, textAlignment: NSTextAlignment, idea: String, commitment: String, hackathon: String, skills: [String]) {
         self.uid = uid
-        self.imageUrls = imageNames
+        self.imageUrl = imageName
         self.attributedString = attributedString
         self.textAlignment = textAlignment
-    }
-    
-    fileprivate var imageIndex = 0 {
-        didSet {
-            let imageUrl = imageUrls[imageIndex]
-            //            let image = UIImage(named: imageName)
-            imageIndexObserver?(imageIndex, imageUrl)
-        }
-    }
-    
-    // Reactive Programming
-    var imageIndexObserver: ((Int, String?) -> ())?
-    
-    func advanceToNextPhoto() {
-        imageIndex = min(imageIndex + 1, imageUrls.count - 1)
-    }
-    
-    func goToPreviousPhoto() {
-        imageIndex = max(0, imageIndex - 1)
+        self.idea = idea
+        self.commitment = commitment
+        self.hackathon = hackathon
+        self.skills = skills
     }
 }
-
-// what exactly do we do with this card view model thing???
-
 

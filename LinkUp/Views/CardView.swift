@@ -19,19 +19,57 @@ class CardView: UIView {
     
     var delegate: CardViewDelegate?
     
+//    var imageUrl: String
+    
     var cardViewModel: CardViewModel! {
         didSet {
             swipingPhotosController.cardViewModel = self.cardViewModel
-            
+            imageView.sd_setImage(with: URL(string: cardViewModel.imageUrl))
             informationLabel.attributedText = cardViewModel.attributedString
             informationLabel.textAlignment = cardViewModel.textAlignment
+            if (cardViewModel.idea == "") {
+                lookingFor.text = "Looking for a project 🔍"
+            }
+            else {
+                lookingFor.text = "Has an idea 💡"
+            }
+            if (cardViewModel.commitment == "High") {
+                commitment.text = "High Commitment ⭐⭐⭐"
+            }
+            else if (cardViewModel.commitment == "Medium") {
+                commitment.text = "Medium Commitment ⭐⭐"
+            }
+            else {
+                commitment.text = "Low Commitment ⭐"
+            }
+            let hackSkills = NSMutableAttributedString(string: "", attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .medium)])
+            let regularAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)]
+            let boldAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+            if (cardViewModel.hackathon != "") {
+                hackSkills.append(NSMutableAttributedString(string: "Hackathons: ", attributes: boldAttributes))
+                hackSkills.append(NSMutableAttributedString(string: cardViewModel.hackathon, attributes: regularAttributes))
+                hackSkills.append(NSMutableAttributedString(string: "\n", attributes: regularAttributes))
+
+            }
+            hackSkills.append(NSMutableAttributedString(string: "Skills:  ", attributes: boldAttributes))
+            hackSkills.append(NSMutableAttributedString(string: cardViewModel.skills.joined(separator: ", "), attributes: regularAttributes))
+            hackathonSkills.attributedText = hackSkills
                                 }
     }
     
     fileprivate let swipingPhotosController = SwipingPhotosController(isCardViewMode: true)
     
     fileprivate let gradientLayer = CAGradientLayer()
+    
+    fileprivate let lookingFor = UILabel()
+    
+    fileprivate let commitment = UILabel()
+    
+    fileprivate let imageView = UIImageView(image: #imageLiteral(resourceName: "kelly3"))
+    
     fileprivate let informationLabel = UILabel()
+    
+    fileprivate let hackathonSkills = UILabel()
     
     // Configurations
     fileprivate let threshold: CGFloat = 80
@@ -42,19 +80,9 @@ class CardView: UIView {
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         addGestureRecognizer(panGesture)
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
+    
         
-    @objc fileprivate func handleTap(gesture: UITapGestureRecognizer) {
-        print("Handling tap and cycling photos")
-        let tapLocation = gesture.location(in: nil)
-        let shouldAdvanceNextPhoto = tapLocation.x > frame.width / 2 ? true : false
-        if shouldAdvanceNextPhoto {
-            cardViewModel.advanceToNextPhoto()
-        } else {
-            cardViewModel.goToPreviousPhoto()
-        }
-    }
     
     fileprivate func setupLayout() {
         // custom drawing code
@@ -64,24 +92,57 @@ class CardView: UIView {
         let swipingPhotosView = swipingPhotosController.view!
         addSubview(swipingPhotosView)
         
-        addSubview(informationLabel)
-        
+        let screenSize: CGRect = UIScreen.main.bounds
+        imageView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.width)
+
+        swipingPhotosView.addSubview(imageView)
         informationLabel.textColor = .black
         informationLabel.numberOfLines = 0
+        hackathonSkills.textColor = .black
+        hackathonSkills.numberOfLines = 0
+
+        let stackView   = UIStackView()
+        let labels   = UIStackView()
+        labels.spacing = 10.0
+        stackView.spacing = 10.0
+        stackView.addArrangedSubview(informationLabel)
+        stackView.addArrangedSubview(labels)
+        stackView.addArrangedSubview(hackathonSkills)
+        labels.axis  = NSLayoutConstraint.Axis.horizontal
+        labels.distribution  = UIStackView.Distribution.equalSpacing
+        labels.anchor(top: nil, leading: stackView.leadingAnchor, bottom: nil, trailing: stackView.trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
         
-        informationLabel.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
+        let bgColor = UIColor(named: "SecondaryColor")
+
+        labels.addArrangedSubview(lookingFor)
+        lookingFor.layer.borderWidth = 1.0
+        lookingFor.layer.cornerRadius = 8
+        lookingFor.backgroundColor = bgColor
+        lookingFor.layer.masksToBounds = true
+        lookingFor.contentMode = .scaleToFill
+        lookingFor.textAlignment = .center
+        lookingFor.numberOfLines = 2
+        lookingFor.font = lookingFor.font.withSize(14)
+        lookingFor.withHeight(50)
         
-        let screenSize: CGRect = UIScreen.main.bounds
-        informationLabel.topAnchor.constraint(equalTo: topAnchor, constant: screenSize.width + 20).isActive = true
-    }
-    
-    fileprivate func setupGradientLayer() {
-        // how we can draw a gradient with Swift
-        gradientLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        gradientLayer.locations = [0.5, 1.1]
-        // self.frame is actually zero frame
+        labels.addArrangedSubview(commitment)
+        commitment.layer.borderWidth = 1.0
+        commitment.layer.cornerRadius = 8
+        commitment.backgroundColor = bgColor
+        commitment.layer.masksToBounds = true
+        commitment.contentMode = .scaleToFill
+        commitment.textAlignment = .center
+        commitment.numberOfLines = 2
+        commitment.font = commitment.font.withSize(14)
+        lookingFor.withHeight(100)
         
-        layer.addSublayer(gradientLayer)
+            
+        swipingPhotosView.addSubview(stackView)
+        stackView.axis  = NSLayoutConstraint.Axis.vertical
+
+        stackView.anchor(top: nil, leading: leadingAnchor, bottom: nil, trailing: trailingAnchor, padding: .init(top: 5, left: 5, bottom: 0, right: 5))
+        stackView.topAnchor.constraint(equalTo: topAnchor, constant: screenSize.width + 20).isActive = true
+        
     }
     
     override func layoutSubviews() {

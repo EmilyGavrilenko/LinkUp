@@ -36,7 +36,7 @@ class ProfileModel {
         college = user.college
         bio = user.bio
         idea = user.idea
-        ideaRow = ideaIndex(value: user.idea!)
+        ideaRow = ideaIndex(value: user.idea ?? "N/A")
         hackathon = user.hackathon
     }
     
