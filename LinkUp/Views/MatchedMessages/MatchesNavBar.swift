@@ -10,7 +10,8 @@ import LBTATools
 
 class MatchesNavBar: UIView {
     
-    let backButton = UIButton(image: #imageLiteral(resourceName: "app_icon"), tintColor: .lightGray)
+    let backButton = UIButton(image: #imageLiteral(resourceName: "app_icon"), tintColor: .gray)
+    let primaryColor = UIColor(named: "PrimaryColor")
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -18,14 +19,14 @@ class MatchesNavBar: UIView {
         backgroundColor = .white
         
         let iconImageView = UIImageView(image: #imageLiteral(resourceName: "top_messages_icon").withRenderingMode(.alwaysTemplate), contentMode: .scaleAspectFit)
-        iconImageView.tintColor = #colorLiteral(red: 0.9860271811, green: 0.3476872146, blue: 0.4476813674, alpha: 1)
-        let messagesLabel = UILabel(text: "Messages", font: .boldSystemFont(ofSize: 20), textColor: #colorLiteral(red: 0.9860271811, green: 0.3476872146, blue: 0.4476813674, alpha: 1), textAlignment: .center)
-        let feedLabel = UILabel(text: "Feed", font: .boldSystemFont(ofSize: 20), textColor: .gray, textAlignment: .center)
-        
+        iconImageView.tintColor = primaryColor
+        let messagesLabel = UILabel(text: "Messages", font: .boldSystemFont(ofSize: 20), textColor: primaryColor ?? #colorLiteral(red: 0.9860271811, green: 0.3476872146, blue: 0.4476813674, alpha: 1), textAlignment: .center)
+//        let feedLabel = UILabel(text: "Feed", font: .boldSystemFont(ofSize: 20), textColor: .gray, textAlignment: .center)
+//
         setupShadow(opacity: 0.2, radius: 8, offset: .init(width: 0, height: 10), color: .init(white: 0, alpha: 0.3))
         
         stack(iconImageView.withHeight(44),
-              hstack(messagesLabel, feedLabel, distribution: .fillEqually)).padTop(10)
+              hstack(messagesLabel, distribution: .fillEqually)).padTop(10)
         
         
         addSubview(backButton)

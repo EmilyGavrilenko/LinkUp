@@ -10,11 +10,15 @@ import LBTATools
 
 class MessagesNavBar: UIView {
     
+    let primaryColor = UIColor(named: "PrimaryColor") ?? .blue
+    let tertiaryColor = UIColor(named: "TertiaryColor")
+    let quadraryColor = UIColor(named: "QuadraryColor")
+    
     let userProfileImageView = CircularImageView(width: 44, image: #imageLiteral(resourceName: "jane1.jpg"))
     let nameLabel = UILabel(text: "USERNAME", font: .systemFont(ofSize: 16))
     
-    let backButton = UIButton(image: #imageLiteral(resourceName: "back"), tintColor: #colorLiteral(red: 0.9792197347, green: 0.2754820287, blue: 0.3579338193, alpha: 1))
-    let flagButton = UIButton(image: #imageLiteral(resourceName: "flag"), tintColor: #colorLiteral(red: 0.9792197347, green: 0.2754820287, blue: 0.3579338193, alpha: 1))
+    let backButton = UIButton(image: #imageLiteral(resourceName: "back"), tintColor: UIColor(named: "PrimaryColor") ?? .blue)
+    let flagButton = UIButton(image: #imageLiteral(resourceName: "flag"), tintColor: UIColor(named: "PrimaryColor") ?? .blue)
     
     fileprivate let match: Match
     
