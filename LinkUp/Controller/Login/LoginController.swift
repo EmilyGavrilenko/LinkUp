@@ -15,6 +15,11 @@ protocol LoginControllerDelegate {
 
 class LoginController: UIViewController {
     
+    let primaryColor = UIColor(named: "PrimaryColor")
+    let tertiaryColor = UIColor(named: "TertiaryColor")
+    let quadraryColor = UIColor(named: "QuadraryColor")
+    let textColor = UIColor(named: "TextColor")
+    
     var delegate: LoginControllerDelegate?
     
     let emailTextField: CustomTextField = {
@@ -39,7 +44,7 @@ class LoginController: UIViewController {
             loginButton
             ])
         sv.axis = .vertical
-        sv.spacing = 8
+        sv.spacing = 12
         return sv
     }()
     
@@ -60,7 +65,7 @@ class LoginController: UIViewController {
         button.setTitleColor(.gray, for: .disabled)
         button.isEnabled = false
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button.layer.cornerRadius = 22
+        button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
         return button
     }()
@@ -109,12 +114,12 @@ class LoginController: UIViewController {
         loginViewModel.isFormValid.bind { [unowned self] (isFormValid) in
             guard let isFormValid = isFormValid else { return }
             self.loginButton.isEnabled = isFormValid
-            self.loginButton.backgroundColor = isFormValid ? #colorLiteral(red: 0.8235294118, green: 0, blue: 0.3254901961, alpha: 1) : .lightGray
+            self.loginButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
             self.loginButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
         }
         loginViewModel.isLoggingIn.bind { [unowned self] (isRegistering) in
             if isRegistering == true {
-                self.loginHUD.textLabel.text = "Register"
+                self.loginHUD.textLabel.text = "Logging In"
                 self.loginHUD.show(in: self.view)
             } else {
                 self.loginHUD.dismiss()
@@ -130,10 +135,10 @@ class LoginController: UIViewController {
     }
     
     fileprivate func setupGradientLayer() {
-        let topColor = #colorLiteral(red: 0.9921568627, green: 0.3568627451, blue: 0.3725490196, alpha: 1)
-        let bottomColor = #colorLiteral(red: 0.8980392157, green: 0, blue: 0.4470588235, alpha: 1)
+        let topColor = primaryColor?.cgColor
+        let bottomColor = tertiaryColor?.cgColor
         // make sure to user cgColor
-        gradientLayer.colors = [topColor.cgColor, bottomColor.cgColor]
+        gradientLayer.colors = [topColor, bottomColor]
         gradientLayer.locations = [0, 1]
         view.layer.addSublayer(gradientLayer)
         gradientLayer.frame = view.bounds

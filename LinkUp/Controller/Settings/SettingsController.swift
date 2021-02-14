@@ -28,9 +28,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     var delegate: SettingsControllerDelegate?
     
     // instance properties
-    lazy var image1Button = createButton(selector: #selector(handleSelectPhoto))
-    lazy var image2Button = createButton(selector: #selector(handleSelectPhoto))
-    lazy var image3Button = createButton(selector: #selector(handleSelectPhoto))
+    lazy var imageButton = createButton(selector: #selector(handleSelectPhoto))
     
     @objc func handleSelectPhoto(button: UIButton) {
         print("Select photo with button:", button)
@@ -117,17 +115,17 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     fileprivate func loadUserPhotos() {
         if let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) {
             SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
-                self.image1Button.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+                self.imageButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
             }
         }
     }
     
     lazy var header: UIView = {
         let header = UIView()
-        header.addSubview(image1Button)
+        header.addSubview(imageButton)
         let padding: CGFloat = 16
-        image1Button.anchor(top: header.topAnchor, leading: header.leadingAnchor, bottom: header.bottomAnchor, trailing: nil, padding: .init(top: padding, left: padding, bottom: padding, right: 0))
-        image1Button.widthAnchor.constraint(equalTo: header.widthAnchor, multiplier: 0.45).isActive = true
+        imageButton.anchor(top: header.topAnchor, leading: header.leadingAnchor, bottom: header.bottomAnchor, trailing: nil, padding: .init(top: padding, left: padding, bottom: padding, right: 0))
+        imageButton.widthAnchor.constraint(equalTo: header.widthAnchor, multiplier: 0.45).isActive = true
         return header
     }()
     
@@ -219,16 +217,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         return cell
     }
     
-//    @objc fileprivate func handleTextChange(textField: UITextField) {
-//        if textField == fullNameTextField {
-//            registrationViewModel.fullName = textField.text
-//        } else if textField == emailTextField {
-//            registrationViewModel.email = textField.text
-//        } else {
-//            registrationViewModel.password = textField.text
-//        }
-//    }
-    
     @objc fileprivate func handleNameChange(textField: UITextField) {
         self.user?.name = textField.text
     }
@@ -260,8 +248,19 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     @objc fileprivate func handleLogout() {
-        try? Auth.auth().signOut()
-        dismiss(animated: true)
+        do {
+            try Auth.auth().signOut()
+            print("Logging out")
+            var loginDelegate: LoginControllerDelegate?
+            let loginController = LoginController()
+            loginController.delegate = loginDelegate
+            navigationController?.pushViewController(loginController, animated: true)
+        }
+        catch {
+            print("already logged out")
+            
+        }
+        // dismiss(animated: true)
     }
     
     @objc fileprivate func handleSave() {

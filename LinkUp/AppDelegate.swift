@@ -19,12 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
-        // No longer need with newer versions of Firestore
-        //        let db = Firestore.firestore()
-        //        let settings = db.settings
-        //        settings.areTimestampsInSnapshotsEnabled = true
-        //        db.settings = settings
-        
         window = UIWindow()
         window?.makeKeyAndVisible()
         window?.rootViewController = UINavigationController(rootViewController: HomeController())

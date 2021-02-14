@@ -590,7 +590,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+<<<<<<< HEAD
 				PRODUCT_BUNDLE_IDENTIFIER = "LinkUp-TreeHacks2";
+=======
+				PRODUCT_BUNDLE_IDENTIFIER = "LinkUp-TreeHacks";
+>>>>>>> 77f28fc1b03cfb3fd43a2d1a70ae3aa8e10b91c8
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -614,7 +618,11 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+<<<<<<< HEAD
 				PRODUCT_BUNDLE_IDENTIFIER = "LinkUp-TreeHacks2";
+=======
+				PRODUCT_BUNDLE_IDENTIFIER = "LinkUp-TreeHacks";
+>>>>>>> 77f28fc1b03cfb3fd43a2d1a70ae3aa8e10b91c8
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

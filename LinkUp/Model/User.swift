@@ -32,6 +32,7 @@ struct User: ProducesCardViewModel {
     
     func toCardViewModel() -> CardViewModel {
         let attributedText = NSMutableAttributedString(string: name ?? "", attributes: [.font: UIFont.systemFont(ofSize: 32, weight: .heavy)])
+<<<<<<< HEAD
         attributedText.append(NSAttributedString(string: "\n"))
         let collegeString = (NSMutableAttributedString(string: college!))
         collegeString.enumerateAttribute(.font, in: NSRange(0..<collegeString.length)) { value, range, stop in
@@ -41,6 +42,16 @@ struct User: ProducesCardViewModel {
         attributedText.append(collegeString)
         attributedText.append(NSAttributedString(string: "\n"))
         attributedText.append(NSAttributedString(string: bio!))
+=======
+        
+        let collegeText = college ?? ""
+        
+        attributedText.append(NSAttributedString(string: " " + collegeText, attributes: [.font: UIFont.systemFont(ofSize: 24, weight: .regular)]))
+        
+        let bioText = "Programmer"
+        attributedText.append(NSAttributedString(string: "\n\(bioText)", attributes: [.font: UIFont.systemFont(ofSize: 20, weight: .regular)]))
+        
+>>>>>>> 77f28fc1b03cfb3fd43a2d1a70ae3aa8e10b91c8
         var imageUrls = [String]() // empty string array
         if let url = imageUrl { imageUrls.append(url) }
         
