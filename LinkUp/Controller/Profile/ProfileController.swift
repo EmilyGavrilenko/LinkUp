@@ -10,6 +10,10 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
+protocol ProfileControllerDelegate {
+    func getFilters()
+}
+
 class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let primaryColor = UIColor(named: "PrimaryColor")
@@ -18,6 +22,7 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
     
     fileprivate let userDetailsModel = ProfileModel()
     var user: User?
+    var delegate: ProfileControllerDelegate?
     
     fileprivate func fetchCurrentUser() {
         Firestore.firestore().fetchCurrentUser { (user, err) in
@@ -36,7 +41,6 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
         fetchCurrentUser()
         setupGradientLayer()
         setupTapGesture()
-        setupBindables()
     }
     
     func getCollegeTextField() -> CustomTextField {
@@ -157,13 +161,11 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let docData: [String: Any] = [
             "uid": uid,
-            "name": userDetailsModel.name ?? "",
             "college": userDetailsModel.college ?? "",
             "hackathon": userDetailsModel.hackathon ?? "",
             "bio": userDetailsModel.bio ?? "",
             "committment": userDetailsModel.committment ?? "",
             "idea": userDetailsModel.idea ?? "",
-            "imageUrl": user!.imageUrl ?? "",
             "createdProfile": true,
         ]
         
@@ -178,21 +180,13 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
             }
             
             print("Finished saving user info")
+            
             self.dismiss(animated: true, completion: {
-                print("Dismissal complete")
+                self.delegate?.getFilters()
             })
         }
     }
-    
-    fileprivate func setupBindables() {
-        userDetailsModel.checkFormValidity()
-        userDetailsModel.isFormValid.bind { [unowned self] (isFormValid) in
-            guard let isFormValid = isFormValid else { return }
-            self.saveButton.isEnabled = isFormValid
-            self.saveButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
-            self.saveButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
-        }
-    }
+
     
     let gradientLayer = CAGradientLayer()
     

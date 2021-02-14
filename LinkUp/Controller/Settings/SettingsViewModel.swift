@@ -34,11 +34,11 @@ class SettingsViewModel {
     func fillValues(user: User) {
         name = user.name
         committment = user.committment
-        committmentRow = committmentIndex(value: user.committment!)
+        committmentRow = committmentIndex(value: (user.committment ?? ""))
         college = user.college
         bio = user.bio
         idea = user.idea
-        ideaRow = ideaIndex(value: user.idea!)
+        ideaRow = ideaIndex(value: user.idea ?? "")
         hackathon = user.hackathon
     }
     

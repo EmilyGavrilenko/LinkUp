@@ -79,6 +79,23 @@ class RegistrationViewModel {
             "createdProfile": false,
         ]
         Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
+            if let err = err {
+                print(err)
+                completion(err)
+                return
+            }
+            completion(nil)
+        }
+        
+        let docData2: [String: Any] = [
+            "uid": uid,
+            "college": "",
+            "hackathon": "",
+            "committment": "",
+            "idea": "",
+        ]
+            
+        Firestore.firestore().collection("filters").document(uid).setData(docData2) { (err) in
             self.bindableIsRegistering.value = false
             if let err = err {
                 print(err)

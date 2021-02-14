@@ -71,7 +71,7 @@ class FilterController: UIViewController, UIPickerViewDelegate, UIPickerViewData
         return tf
     }()
     
-    func getIdeaPicker() -> UIPickerView {
+    lazy var getIdeaPicker: UIPickerView = {
         let ideaPicker: UIPickerView = UIPickerView()
         ideaPicker.delegate = self as UIPickerViewDelegate
         ideaPicker.dataSource = self as UIPickerViewDataSource
@@ -80,9 +80,9 @@ class FilterController: UIViewController, UIPickerViewDelegate, UIPickerViewData
         ideaPicker.selectRow(filterModel.ideaRow ?? 0, inComponent: 0, animated: true)
         ideaPicker.tag = 1
         return ideaPicker
-    }
+    }()
     
-    func getCommittmentPicker() -> UIPickerView {
+    lazy var getCommittmentPicker: UIPickerView = {
         let ideaPicker: UIPickerView = UIPickerView()
         ideaPicker.delegate = self as UIPickerViewDelegate
         ideaPicker.dataSource = self as UIPickerViewDataSource
@@ -91,7 +91,7 @@ class FilterController: UIViewController, UIPickerViewDelegate, UIPickerViewData
         ideaPicker.selectRow(filterModel.committmentRow ?? 0, inComponent: 0, animated: true)
         ideaPicker.tag = 2
         return ideaPicker
-    }
+    }()
     
     lazy var getHackathonTextField: CustomTextField = {
         let tf = CustomTextField(padding: 24, height: 50)
@@ -156,6 +156,18 @@ class FilterController: UIViewController, UIPickerViewDelegate, UIPickerViewData
         return button
     }()
     
+    let clearAllBtn: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Reset Filters", for: .normal)
+        button.setTitleColor(.red, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
+        button.backgroundColor = .white
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.layer.cornerRadius = 16
+        button.addTarget(self, action: #selector(clearAll), for: .touchUpInside)
+        return button
+    }()
+    
     func hackathonField() -> UIStackView {
         let sv = UIStackView(arrangedSubviews: [
             getHackathonTextField,
@@ -205,6 +217,17 @@ class FilterController: UIViewController, UIPickerViewDelegate, UIPickerViewData
         getCollegeTextField.text = ""
     }
     
+    @objc fileprivate func clearAll() {
+        filterModel.college = ""
+        getCollegeTextField.text = ""
+        filterModel.hackathon = ""
+        getHackathonTextField.text = ""
+        filterModel.committment = ""
+        getCommittmentPicker.selectRow(0, inComponent: 0, animated: true)
+        filterModel.idea = ""
+        getIdeaPicker.selectRow(0, inComponent: 0, animated: true)
+    }
+    
     lazy var verticalStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
             createPageLabel(name: "Filter By:"),
@@ -213,9 +236,10 @@ class FilterController: UIViewController, UIPickerViewDelegate, UIPickerViewData
             createLabel(name: "Hackathon"),
             hackathonField(),
             createLabel(name: "Committment"),
-            getCommittmentPicker(),
+            getCommittmentPicker,
             createLabel(name: "My ideal partner:"),
-            getIdeaPicker(),
+            getIdeaPicker,
+            clearAllBtn,
             saveButton,
             cancelButton,
             ])
