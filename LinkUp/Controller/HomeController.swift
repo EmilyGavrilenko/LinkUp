@@ -70,10 +70,17 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 return
             }
             self.user = user
-            
-            self.fetchSwipes()
-            
-            //            self.fetchUsersFromFirestore()
+//            if (user!.createdProfile ?? false) == false {
+////                let userInfoController = UserInfoController()
+////                self.navigationController?.pushViewController(userInfoController, animated: true)
+//
+//                let settingsController = UserInfoController()
+//                let navController = UINavigationController(rootViewController: settingsController)
+//                self.present(navController, animated: true)
+//            }
+//            else {
+                self.fetchSwipes()
+//            }
         }
     }
     

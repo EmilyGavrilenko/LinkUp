@@ -52,8 +52,8 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         navigationController?.isNavigationBarHidden = true
         view.addSubview(verticalStackView)
         view.addSubview(UIButton(title: "Hello", titleColor: .red))
-        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        //verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
+        //verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     lazy var verticalStackView: UIStackView = {
@@ -84,6 +84,7 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             "bio": userDetailsModel.bio ?? "",
             "committment": userDetailsModel.committment ?? "",
             "idea": userDetailsModel.idea ?? "",
+            "createdProfile": true,
         ]
         
         let hud = JGProgressHUD(style: .dark)
@@ -115,7 +116,6 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-        ideaPicker.selectRow(userDetailsModel.ideaRow ?? 0, inComponent: 0, animated: true)
         ideaPicker.tag = 1
         return ideaPicker
     }
@@ -126,7 +126,6 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-        ideaPicker.selectRow(userDetailsModel.committmentRow ?? 0, inComponent: 0, animated: true)
         ideaPicker.tag = 2
         return ideaPicker
     }

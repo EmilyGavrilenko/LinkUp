@@ -20,6 +20,7 @@ struct User: ProducesCardViewModel {
     var hackathon: String?
     var skills: [String]?
     var imageUrl: String?
+    var createdProfile: Bool?
     var uid: String?
     
     init(dictionary: [String: Any]) {
@@ -33,6 +34,7 @@ struct User: ProducesCardViewModel {
         self.hackathon = dictionary["hackathon"] as? String ?? ""
         self.skills = dictionary["skills"] as? [String]
         self.major = dictionary["major"] as? String ?? ""
+        self.createdProfile = dictionary["createdProfile"] as? Bool ?? false
         
         self.imageUrl = dictionary["imageUrl"] as? String ?? ""
         self.uid = dictionary["uid"] as? String ?? ""
