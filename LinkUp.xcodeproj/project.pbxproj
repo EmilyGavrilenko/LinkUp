@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7C116D5D25D8989500F83FBA /* TestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D5C25D8989500F83FBA /* TestController.swift */; };
+		7C116D5D25D8989500F83FBA /* UserInfoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D5C25D8989500F83FBA /* UserInfoController.swift */; };
 		7C116D6025D899D000F83FBA /* SettingsTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D5F25D899D000F83FBA /* SettingsTextField.swift */; };
-		7C116D6525D89BA100F83FBA /* TestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D6425D89BA100F83FBA /* TestModel.swift */; };
+		7C116D6525D89BA100F83FBA /* UserDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D6425D89BA100F83FBA /* UserDetailsModel.swift */; };
+		7C116D6C25D8F3F500F83FBA /* OldSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D6B25D8F3F500F83FBA /* OldSettingsController.swift */; };
+		7C116D6F25D90B5400F83FBA /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C116D6E25D90B5400F83FBA /* SettingsViewModel.swift */; };
 		7C7EFD1225D85D0200754881 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7C7EFD1125D85D0200754881 /* GoogleService-Info.plist */; };
 		7CF025FE25D838E900356303 /* SettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF025FD25D838E900356303 /* SettingsModel.swift */; };
 		F41E4D788D4DE3738E990BBA /* Pods_LinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A2FC4B5FD2CFE72382AB89A1 /* Pods_LinkUp.framework */; };
@@ -56,9 +58,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7C116D5C25D8989500F83FBA /* TestController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestController.swift; sourceTree = "<group>"; };
+		7C116D5C25D8989500F83FBA /* UserInfoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoController.swift; sourceTree = "<group>"; };
 		7C116D5F25D899D000F83FBA /* SettingsTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTextField.swift; sourceTree = "<group>"; };
-		7C116D6425D89BA100F83FBA /* TestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestModel.swift; sourceTree = "<group>"; };
+		7C116D6425D89BA100F83FBA /* UserDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailsModel.swift; sourceTree = "<group>"; };
+		7C116D6B25D8F3F500F83FBA /* OldSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldSettingsController.swift; sourceTree = "<group>"; };
+		7C116D6E25D90B5400F83FBA /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		7C7EFD1125D85D0200754881 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7CF025FD25D838E900356303 /* SettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModel.swift; sourceTree = "<group>"; };
 		A2FC4B5FD2CFE72382AB89A1 /* Pods_LinkUp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LinkUp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,8 +136,8 @@
 		7C116D6225D89B8100F83FBA /* Test */ = {
 			isa = PBXGroup;
 			children = (
-				7C116D5C25D8989500F83FBA /* TestController.swift */,
-				7C116D6425D89BA100F83FBA /* TestModel.swift */,
+				7C116D5C25D8989500F83FBA /* UserInfoController.swift */,
+				7C116D6425D89BA100F83FBA /* UserDetailsModel.swift */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -145,6 +149,8 @@
 				7C116D5F25D899D000F83FBA /* SettingsTextField.swift */,
 				FE694234230A17B400A73D8E /* SettingsCell.swift */,
 				7CF025FD25D838E900356303 /* SettingsModel.swift */,
+				7C116D6B25D8F3F500F83FBA /* OldSettingsController.swift */,
+				7C116D6E25D90B5400F83FBA /* SettingsViewModel.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -428,6 +434,7 @@
 				FE27062122E9CC0D00CA7225 /* HomeBottomControlsStackView.swift in Sources */,
 				FE8E5A4A22EBDA3500AE2027 /* Advertiser.swift in Sources */,
 				FE5F5F87230AA1A90001E6A1 /* Match.swift in Sources */,
+				7C116D6F25D90B5400F83FBA /* SettingsViewModel.swift in Sources */,
 				FE27060B22E991A300CA7225 /* AppDelegate.swift in Sources */,
 				FE5F5F7D230AA1180001E6A1 /* MatchesNavBar.swift in Sources */,
 				FE694241230A443300A73D8E /* LoginViewModel.swift in Sources */,
@@ -437,7 +444,7 @@
 				FE694243230A449D00A73D8E /* Firebase+Utls.swift in Sources */,
 				FE14C18422EB22E5001E6471 /* CardViewModel.swift in Sources */,
 				FE5F5F89230AA3910001E6A1 /* MatchView.swift in Sources */,
-				7C116D5D25D8989500F83FBA /* TestController.swift in Sources */,
+				7C116D5D25D8989500F83FBA /* UserInfoController.swift in Sources */,
 				FE14C17E22EAFB77001E6471 /* CardView.swift in Sources */,
 				FE64CF1622FAA92900072CF7 /* SettingsController.swift in Sources */,
 				FE14C17C22EAF452001E6471 /* TopNavigationStackView.swift in Sources */,
@@ -449,9 +456,10 @@
 				FE14C18122EB18F4001E6471 /* User.swift in Sources */,
 				FE5F5F79230AA0EE0001E6A1 /* CustomInputAcessoryView.swift in Sources */,
 				FE69423B230A43BE00A73D8E /* UserDetailsController.swift in Sources */,
+				7C116D6C25D8F3F500F83FBA /* OldSettingsController.swift in Sources */,
 				7C116D6025D899D000F83FBA /* SettingsTextField.swift in Sources */,
 				FE694235230A17B400A73D8E /* SettingsCell.swift in Sources */,
-				7C116D6525D89BA100F83FBA /* TestModel.swift in Sources */,
+				7C116D6525D89BA100F83FBA /* UserDetailsModel.swift in Sources */,
 				FE5F5F6E230AA0480001E6A1 /* MatchesHorizontalController.swift in Sources */,
 				FE5F5F77230AA0D00001E6A1 /* MessageCell.swift in Sources */,
 			);

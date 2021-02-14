@@ -1,5 +1,5 @@
 //
-//  UserDetailsController.swift
+//  UserInfoController.swift
 //  LinkUp
 //
 //  Created by Emily Gavrilenko on 2/13/21.
@@ -10,47 +10,101 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-class UserDetailsController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UINavigationControllerDelegate {
     
     let primaryColor = UIColor(named: "PrimaryColor")
     let tertiaryColor = UIColor(named: "TertiaryColor")
     let quadraryColor = UIColor(named: "QuadraryColor")
     
     fileprivate let userDetailsModel = UserDetailsModel()
+    
     var user: User?
     
     fileprivate func fetchCurrentUser() {
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Loading Data"
+        hud.show(in: self.view)
+        
         Firestore.firestore().fetchCurrentUser { (user, err) in
             if let err = err {
                 print("Failed to fetch user:", err)
+                hud.dismiss()
                 return
             }
+            print("Found user")
+            print(user!)
             self.user = user
-            self.userDetailsModel.fillValues(user: self.user!)
             self.setupLayout()
+            
+            hud.dismiss()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("Loading view")
         fetchCurrentUser()
         setupGradientLayer()
         setupTapGesture()
-        setupBindables()
     }
     
-    func getNameTextField() -> CustomTextField {
-        let tf = CustomTextField(padding: 24, height: 50)
-        tf.placeholder = "Enter Name"
-        tf.text = user?.name
-        tf.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
-        return tf
+    fileprivate func setupLayout() {
+        navigationController?.isNavigationBarHidden = true
+        view.addSubview(verticalStackView)
+        view.addSubview(UIButton(title: "Hello", titleColor: .red))
+        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
+        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    lazy var verticalStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [
+            createLabel(name: "College"),
+            getCollegeTextField(),
+            createLabel(name: "Hackathon"),
+            getHackathonTextField(),
+            createLabel(name: "Bio"),
+            getBioTextField(),
+            createLabel(name: "Committment"),
+            getCommittmentPicker(),
+            createLabel(name: "Do you have an project idea?"),
+            getIdeaPicker(),
+            saveButton,
+            ])
+        sv.axis = .vertical
+        sv.spacing = 12
+        return sv
+    }()
+    
+    @objc fileprivate func handleSave() {
+        print("Saving our settings data into Firestore")
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let docData: [String: Any] = [
+            "college": userDetailsModel.college ?? "",
+            "hackathon": userDetailsModel.hackathon ?? "",
+            "bio": userDetailsModel.bio ?? "",
+            "committment": userDetailsModel.committment ?? "",
+            "idea": userDetailsModel.idea ?? "",
+        ]
+        
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Saving Profile"
+        hud.show(in: view)
+        Firestore.firestore().collection("users").document(uid).setData(docData, merge: true) { (err) in
+            hud.dismiss()
+            if let err = err {
+                print("Failed to save user settings:", err)
+                return
+            }
+        
+            self.dismiss(animated: true, completion: {
+                print("Dismissal complete")
+            })
+        }
     }
     
     func getCollegeTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
         tf.placeholder = "Enter Name"
-        tf.text = user?.college
         tf.addTarget(self, action: #selector(handleCollegeChange), for: .editingChanged)
         return tf
     }
@@ -80,8 +134,6 @@ class UserDetailsController: UIViewController, UIPickerViewDelegate, UIPickerVie
     func getBioTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
         tf.placeholder = "Enter Bio"
-        tf.keyboardType = .alphabet
-        tf.text = user?.bio
         tf.addTarget(self, action: #selector(handleBioChange), for: .editingChanged)
         return tf
     }
@@ -89,7 +141,6 @@ class UserDetailsController: UIViewController, UIPickerViewDelegate, UIPickerVie
     func getHackathonTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
         tf.placeholder = "Enter Hackathon"
-        tf.text = user?.hackathon
         tf.addTarget(self, action: #selector(handleHackathonChange), for: .editingChanged)
         return tf
     }
@@ -128,42 +179,6 @@ class UserDetailsController: UIViewController, UIPickerViewDelegate, UIPickerVie
         return button
     }()
     
-    lazy var verticalStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [
-            createLabel(name: "Name"),
-            getNameTextField(),
-            createLabel(name: "College"),
-            getCollegeTextField(),
-            createLabel(name: "Hackathon"),
-            getHackathonTextField(),
-            createLabel(name: "Bio"),
-            getBioTextField(),
-            createLabel(name: "Committment"),
-            getCommittmentPicker(),
-            createLabel(name: "Do you have an project idea?"),
-            getIdeaPicker(),
-            saveButton,
-            ])
-        sv.axis = .vertical
-        sv.spacing = 12
-        return sv
-    }()
-    
-    func getTableView() -> UITableView {
-        let table = UITableView()
-        table.addSubview(getNameTextField())
-        table.addSubview(getCollegeTextField())
-        table.addSubview(getHackathonTextField())
-        table.addSubview(getBioTextField())
-        table.addSubview(getCommittmentPicker())
-        table.addSubview(getIdeaPicker())
-        table.addSubview(saveButton)
-        return table
-    }
-    
-    @objc fileprivate func handleNameChange(textField: UITextField) {
-        userDetailsModel.name = textField.text
-    }
     @objc fileprivate func handleCollegeChange(textField: UITextField) {
         userDetailsModel.college = textField.text
     }
@@ -175,49 +190,6 @@ class UserDetailsController: UIViewController, UIPickerViewDelegate, UIPickerVie
     }
     @objc fileprivate func handleSkillChange(textField: UITextField) {
         print("Editing Skill")
-    }
-    
-    @objc fileprivate func handleSave() {
-        print("Saving our settings data into Firestore")
-        print("Have idea \(userDetailsModel.idea)")
-        print("Committment \(userDetailsModel.committment)")
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let docData: [String: Any] = [
-            "uid": uid,
-            "name": userDetailsModel.name ?? "",
-            "college": userDetailsModel.college ?? "",
-            "hackathon": userDetailsModel.hackathon ?? "",
-            "bio": userDetailsModel.bio ?? "",
-            "committment": userDetailsModel.committment ?? "",
-            "idea": userDetailsModel.idea ?? "",
-            "imageUrl": user!.imageUrl ?? "",
-        ]
-        
-        let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Saving settings"
-        hud.show(in: view)
-        Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
-            hud.dismiss()
-            if let err = err {
-                print("Failed to save user settings:", err)
-                return
-            }
-            
-            print("Finished saving user info")
-            self.dismiss(animated: true, completion: {
-                print("Dismissal complete")
-            })
-        }
-    }
-    
-    fileprivate func setupBindables() {
-        userDetailsModel.checkFormValidity()
-        userDetailsModel.isFormValid.bind { [unowned self] (isFormValid) in
-            guard let isFormValid = isFormValid else { return }
-            self.saveButton.isEnabled = isFormValid
-            self.saveButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
-            self.saveButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
-        }
     }
     
     let gradientLayer = CAGradientLayer()
@@ -235,13 +207,6 @@ class UserDetailsController: UIViewController, UIPickerViewDelegate, UIPickerVie
         gradientLayer.locations = [0, 1]
         view.layer.addSublayer(gradientLayer)
         gradientLayer.frame = view.bounds
-    }
-    
-    fileprivate func setupLayout() {
-        navigationController?.isNavigationBarHidden = true
-        view.addSubview(verticalStackView)
-        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     var pickerData1 = ["N/A", "Have an idea", "Looking for an idea"]

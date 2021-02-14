@@ -25,7 +25,6 @@ class LoginController: UIViewController {
     let emailTextField: CustomTextField = {
         let tf = CustomTextField(padding: 24, height: 50)
         tf.placeholder = "Enter email"
-        tf.text = "Hello"
         tf.keyboardType = .emailAddress
         tf.addTarget(self, action: #selector(handleTextChange), for: .editingChanged)
         return tf
@@ -96,7 +95,8 @@ class LoginController: UIViewController {
     }()
     
     @objc fileprivate func handleBack() {
-        navigationController?.popViewController(animated: true)
+        let registrationController = RegistrationController()
+        navigationController?.pushViewController(registrationController, animated: true)
     }
     
     override func viewDidLoad() {

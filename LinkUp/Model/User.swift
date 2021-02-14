@@ -16,7 +16,7 @@ struct User: ProducesCardViewModel {
     var major: String?
     var committment: String?
     var bio: String?
-    var haveIdea: Bool?
+    var idea: String?
     var hackathon: String?
     var skills: [String]?
     var imageUrl: String?
@@ -24,12 +24,12 @@ struct User: ProducesCardViewModel {
     
     init(dictionary: [String: Any]) {
         // we'll initialize our user here
-        self.name = dictionary["fullName"] as? String ?? ""
+        self.name = dictionary["name"] as? String ?? ""
         self.college = dictionary["college"] as? String ?? ""
         self.major = dictionary["major"] as? String ?? ""
         self.committment = dictionary["committment"] as? String ?? ""
         self.bio = dictionary["bio"] as? String ?? ""
-        self.haveIdea = dictionary["haveIdea"] as? Bool
+        self.idea = dictionary["idea"] as? String
         self.hackathon = dictionary["hackathon"] as? String ?? ""
         self.skills = dictionary["skills"] as? [String]
         self.major = dictionary["major"] as? String ?? ""

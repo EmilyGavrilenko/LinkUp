@@ -294,18 +294,18 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         present(userDetailsController, animated: true)
     }
     
-//    @objc func handleSettings() {
-//        let settingsController = SettingsController()
-//        settingsController.delegate = self
-//        let navController = UINavigationController(rootViewController: settingsController)
-//        present(navController, animated: true)
-//    }
-    
     @objc func handleSettings() {
-        let settingsController = TestController()
+        let settingsController = SettingsController()
+        //settingsController.delegate = self
         let navController = UINavigationController(rootViewController: settingsController)
         present(navController, animated: true)
     }
+    
+//    @objc func handleSettings() {
+//        let settingsController = UserInfoController()
+//        let navController = UINavigationController(rootViewController: settingsController)
+//        present(navController, animated: true)
+//    }
     
     func didSaveSettings() {
         print("Notified of dismissal from SettingsController in HomeController")

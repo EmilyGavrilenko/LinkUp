@@ -56,9 +56,9 @@ class RegistrationController: UIViewController {
     lazy var selectPhotoButtonWidthAnchor = selectPhotoButton.widthAnchor.constraint(equalToConstant: 275)
     lazy var selectPhotoButtonHeightAnchor = selectPhotoButton.heightAnchor.constraint(equalToConstant: 275)
     
-    let fullNameTextField: CustomTextField = {
+    let nameTextField: CustomTextField = {
         let tf = CustomTextField(padding: 24, height: 50)
-        tf.placeholder = "Enter full name"
+        tf.placeholder = "Enter name"
         tf.addTarget(self, action: #selector(handleTextChange), for: .editingChanged)
         return tf
     }()
@@ -78,8 +78,8 @@ class RegistrationController: UIViewController {
     }()
     
     @objc fileprivate func handleTextChange(textField: UITextField) {
-        if textField == fullNameTextField {
-            registrationViewModel.fullName = textField.text
+        if textField == nameTextField {
+            registrationViewModel.name = textField.text
         } else if textField == emailTextField {
             registrationViewModel.email = textField.text
         } else {
@@ -117,6 +117,8 @@ class RegistrationController: UIViewController {
                 self?.delegate?.didFinishLoggingIn()
             })
         }
+//        let userInfoController = UserInfoController()
+//        navigationController?.pushViewController(userInfoController, animated: true)
     }
     
     fileprivate func showHUDWithError(error: Error) {
@@ -201,7 +203,7 @@ class RegistrationController: UIViewController {
     
     lazy var verticalStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
-            fullNameTextField,
+            nameTextField,
             emailTextField,
             passwordTextField,
             registerButton

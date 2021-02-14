@@ -67,7 +67,7 @@ class SettingsModel {
     fileprivate func saveInfoToFirestore(imageUrl: String, completion: @escaping (Error?) -> ()) {
         let uid = Auth.auth().currentUser?.uid ?? ""
         let docData: [String : Any] = [
-            "fullName": name ?? "",
+            "name": name ?? "",
             "uid": uid,
             "imageUrl": imageUrl ?? "",
             "committment": committment ?? "",
