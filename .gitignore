@@ -6,7 +6,7 @@ Pods/
 /Pods/Target Support Files/
 Pods/
 LinkUp/GoogleService-Info.plist
-
+LinkUp.xcodeproj/project.pbxproj
 build/
 *.pbxuser
 !default.pbxuser
