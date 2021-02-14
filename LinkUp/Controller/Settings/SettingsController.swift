@@ -103,7 +103,11 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     fileprivate func setupNavigationItems() {
             navigationItem.title = "Settings"
-            navigationController?.navigationBar.prefersLargeTitles = true
+            var nav = navigationController?.navigationBar
+            nav?.prefersLargeTitles = true
+            nav?.barStyle = UIBarStyle.black
+            nav?.tintColor = UIColor.white
+            nav?.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
             navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
             navigationItem.rightBarButtonItems = [
                 UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
