@@ -268,7 +268,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let docData: [String: Any] = [
             "uid": uid,
-            "fullName": user?.name ?? "",
+            "name": user?.name ?? "",
             "college": user?.college ?? "",
             "major": user?.major ?? "",
             "committment": user?.committment ?? "",

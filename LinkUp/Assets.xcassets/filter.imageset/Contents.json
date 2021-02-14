@@ -5,11 +5,12 @@
       "scale" : "1x"
     },
     {
-      "filename" : "info_icon.jpeg",
+      "filename" : "filter@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+    "filename" : "filter@2x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

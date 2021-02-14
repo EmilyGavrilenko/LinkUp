@@ -21,7 +21,7 @@ struct User: ProducesCardViewModel {
     
     init(dictionary: [String: Any]) {
         // we'll initialize our user here
-        self.name = dictionary["fullName"] as? String ?? ""
+        self.name = dictionary["name"] as? String ?? ""
         self.college = dictionary["college"] as? String ?? ""
         self.major = dictionary["major"] as? String ?? ""
         self.committment = dictionary["committment"] as? String ?? ""

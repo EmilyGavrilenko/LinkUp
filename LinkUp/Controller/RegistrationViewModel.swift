@@ -15,7 +15,7 @@ class RegistrationViewModel {
     var bindableImage = Bindable<UIImage>()
     var bindableIsFormValid = Bindable<Bool>()
     
-    var fullName: String? {
+    var name: String? {
         didSet {
             checkFormValidity()
         }
@@ -24,7 +24,7 @@ class RegistrationViewModel {
     var password: String? { didSet { checkFormValidity() } }
     
     func checkFormValidity() {
-        let isFormValid = fullName?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && bindableImage.value != nil
+        let isFormValid = name?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && bindableImage.value != nil
         bindableIsFormValid.value = isFormValid
     }
     
@@ -72,7 +72,7 @@ class RegistrationViewModel {
     fileprivate func saveInfoToFirestore(imageUrl: String, completion: @escaping (Error?) -> ()) {
         let uid = Auth.auth().currentUser?.uid ?? ""
         let docData: [String : Any] = [
-            "fullName": fullName ?? "",
+            "name": name ?? "",
             "uid": uid,
             "imageUrl": imageUrl,
             "committment": "high",
