@@ -23,9 +23,9 @@ class PhotoController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(imageView)
-        imageView.fillSuperview()
         imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
+        let screenSize: CGRect = UIScreen.main.bounds
+        imageView.frame = CGRect(x: 0, y: 0, width: screenSize.width, height: screenSize.width)
     }
     
     required init?(coder aDecoder: NSCoder) {
