@@ -41,8 +41,6 @@ struct User: ProducesCardViewModel {
         attributedText.append(collegeString)
         attributedText.append(NSAttributedString(string: "\n"))
         attributedText.append(NSAttributedString(string: bio!))
-
-    
         var imageUrls = [String]() // empty string array
         if let url = imageUrl { imageUrls.append(url) }
         
