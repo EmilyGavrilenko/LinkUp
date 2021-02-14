@@ -10,21 +10,10 @@ import UIKit
 
 class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     
-    var cardViewModel: CardViewModel! {
-        didSet {
-            controllers = cardViewModel.imageUrls.map({ (imageUrl) -> UIViewController in
-                let photoController = PhotoController(imageUrl: imageUrl)
-                return photoController
-            })
-            
-            setViewControllers([controllers.first!], direction: .forward, animated: false)
-            
-        }
-    }
+    var cardViewModel: CardViewModel!
     
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        let currentPhotoController = viewControllers?.first
     }
     
     var controllers = [UIViewController]() // blank array
@@ -48,29 +37,9 @@ class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSou
         
         if isCardViewMode {
             disableSwipingAbility()
-        }
-        
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
+        }        
     }
     
-    @objc fileprivate func handleTap(gesture: UITapGestureRecognizer) {
-        print("Cycle through photos")
-        let currentController = viewControllers!.first!
-        if let index = controllers.firstIndex(of: currentController) {
-            
-            
-            if gesture.location(in: self.view).x > view.frame.width / 2 {
-                let nextIndex = min(index + 1, controllers.count - 1)
-                let nextController = controllers[nextIndex]
-                setViewControllers([nextController], direction: .forward, animated: false)
-                
-            } else {
-                let prevIndex = max(0, index - 1)
-                let prevController = controllers[prevIndex]
-                setViewControllers([prevController], direction: .forward, animated: false)
-            }
-        }
-    }
     
     fileprivate func disableSwipingAbility() {
         view.subviews.forEach { (v) in

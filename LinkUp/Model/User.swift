@@ -35,7 +35,6 @@ struct User: ProducesCardViewModel {
         self.skills = dictionary["skills"] as? [String]
         self.major = dictionary["major"] as? String ?? ""
         self.createdProfile = dictionary["createdProfile"] as? Bool ?? false
-        
         self.imageUrl = dictionary["imageUrl"] as? String ?? ""
         self.uid = dictionary["uid"] as? String ?? ""
     }
@@ -47,13 +46,11 @@ struct User: ProducesCardViewModel {
         collegeString.enumerateAttribute(.font, in: NSRange(0..<collegeString.length)) { value, range, stop in
             collegeString.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 17), range: range)
         }
-//        collegeString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 32)], range: NSRange(location: 0, length: 100))
         attributedText.append(collegeString)
         attributedText.append(NSAttributedString(string: "\n"))
         attributedText.append(NSAttributedString(string: bio!))
-        var imageUrls = [String]() // empty string array
-        if let url = imageUrl { imageUrls.append(url) }
         
-        return CardViewModel(uid: self.uid ?? "", imageNames: imageUrls, attributedString: attributedText, textAlignment: .left)
+        
+        return CardViewModel(uid: self.uid ?? "", imageName: imageUrl!, attributedString: attributedText, textAlignment: .left, idea: idea ?? "", commitment: committment ?? "", hackathon: hackathon ?? "", skills: skills ?? ["Java", "Python", "Git", "Web Dev"])
     }
 }
