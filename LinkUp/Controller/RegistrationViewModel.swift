@@ -76,6 +76,7 @@ class RegistrationViewModel {
             "committment": "",
             "idea": "",
             "imageUrl": imageUrl,
+            "createdProfile": false,
         ]
         Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
             self.bindableIsRegistering.value = false
