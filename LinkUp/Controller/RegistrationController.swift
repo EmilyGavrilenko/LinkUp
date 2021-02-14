@@ -269,7 +269,6 @@ class RegistrationController: UIViewController {
         
         let topColor = primaryColor?.cgColor
         let bottomColor = tertiaryColor?.cgColor
-        // make sure to user cgColor
         gradientLayer.colors = [topColor, bottomColor]
         gradientLayer.locations = [0, 1]
         view.layer.addSublayer(gradientLayer)

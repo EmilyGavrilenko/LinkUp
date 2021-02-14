@@ -17,6 +17,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     let bottomControls = HomeBottomControlsStackView()
     
     var cardViewModels = [CardViewModel]() // empty array
+    var filters: Filters?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +29,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         
         bottomControls.refreshButton.addTarget(self, action: #selector(handleRefresh), for: .touchUpInside)
         bottomControls.moreInfoButton.addTarget(self, action: #selector(handleMoreInfo), for: .touchUpInside)
+        bottomControls.filterButton.addTarget(self, action: #selector(handleFilter), for: .touchUpInside)
         
         setupLayout()
         fetchCurrentUser()
@@ -92,30 +94,67 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             
             let data = snapshot?.data() as? [String: Int] ?? [:]
             self.swipes = data
+            self.getFilters()
+        }
+    }
+    
+    func getFilters() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("filters").document(uid).getDocument { (snapshot, err) in
+            if let err = err {
+                print("failed to fetch filters for currently logged in user:", err)
+                return
+            }
+            
+            guard let dictionary = snapshot?.data() else { return }
+            self.filters = Filters(dictionary: dictionary)
+            
             self.fetchUsersFromFirestore()
         }
     }
     
+    
     @objc fileprivate func handleRefresh() {
         cardsDeckView.subviews.forEach({$0.removeFromSuperview()})
-        fetchUsersFromFirestore()
+        getFilters()
     }
     
     @objc fileprivate func handleMoreInfo() {
         didTapMoreInfo(cardViewModel: (topCardView?.cardViewModel)!)
     }
     
+    @objc fileprivate func handleFilter() {
+        let filterController = FilterController()
+        present(filterController, animated: true)
+    }
+    
     var lastFetchedUser: User?
     
     fileprivate func fetchUsersFromFirestore() {
+        let db = Firestore.firestore()
+        var query = db.collection("users").limit(to: 20).whereField("committment", isEqualTo: "High")
+//        if (filters?.college ?? "") != "" {
+//            print("Quering by college \(filters?.college)")
+//            query = query.whereField("college", isEqualTo: filters?.college)
+//        }
+//        if (filters?.hackathon ?? "") != "" {
+//            print("Quering by hackathon \(filters?.hackathon)")
+//            query = query.whereField("hackathon", isEqualTo: filters?.hackathon)
+//        }
+//        if (filters?.committment ?? "") != "" {
+//            print("Quering by committment \(filters?.committment)")
+//            query = query.whereField("committment", isEqualTo: filters?.committment)
+//        }
+//        if (filters?.idea ?? "") != "" {
+//            print("Quering by idea \(filters?.idea)")
+//            query = query.whereField("idea", isEqualTo: filters?.idea)
+//        }
         
-        let query = Firestore.firestore().collection("users")
-            //.whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge).limit(to: 10)
         topCardView = nil
         query.getDocuments { (snapshot, err) in
             self.hud.dismiss()
             if let err = err {
-                print("Failed to fetch users:", err)
+                print("Failed to fetch filters:", err)
                 return
             }
             
