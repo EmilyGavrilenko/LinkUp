@@ -10,11 +10,11 @@ import LBTATools
 
 class MatchesHeader: UICollectionReusableView {
     
-    let newMatchesLabel = UILabel(text: "New Matches", font: .boldSystemFont(ofSize: 18), textColor: #colorLiteral(red: 0.9826375842, green: 0.3476698399, blue: 0.447683692, alpha: 1))
+    let newMatchesLabel = UILabel(text: "New Matches", font: .boldSystemFont(ofSize: 18), textColor: UIColor(named: "PrimaryColor") ?? #colorLiteral(red: 0.9826375842, green: 0.3476698399, blue: 0.447683692, alpha: 1))
     
     let matchesHorizontalController = MatchesHorizontalController()
     
-    let messagesLabel = UILabel(text: "Messages", font: .boldSystemFont(ofSize: 18), textColor: #colorLiteral(red: 0.9826375842, green: 0.3476698399, blue: 0.447683692, alpha: 1))
+    let messagesLabel = UILabel(text: "Messages", font: .boldSystemFont(ofSize: 18), textColor: UIColor(named: "PrimaryColor") ?? #colorLiteral(red: 0.9826375842, green: 0.3476698399, blue: 0.447683692, alpha: 1))
     
     override init(frame: CGRect) {
         super.init(frame: frame)

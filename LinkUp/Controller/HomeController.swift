@@ -22,7 +22,6 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         super.viewDidLoad()
         
         navigationController?.navigationBar.isHidden = true
-        //        navigationController?.isNavigationBarHidden = true
         
         topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
         topStackView.messageButton.addTarget(self, action: #selector(handleMessages), for: .touchUpInside)
