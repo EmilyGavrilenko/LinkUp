@@ -25,7 +25,7 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     let tertiaryColor = UIColor(named: "TertiaryColor")
     let quadraryColor = UIColor(named: "QuadraryColor")
     
-    var delegate: OldSettingsControllerDelegate?
+    var delegate: SettingsControllerDelegate?
     fileprivate let settingsModel = SettingsViewModel()
     var user: User?
     
@@ -190,7 +190,7 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     func getCollegeTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
-        tf.placeholder = "Enter Name"
+        tf.placeholder = "Enter College"
         tf.text = user?.college
         tf.addTarget(self, action: #selector(handleCollegeChange), for: .editingChanged)
         return tf
