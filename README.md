@@ -33,4 +33,9 @@ Neither of us came into this hackathon with a lot of iOS programming experience,
 Our knowledge of Xcode, Swift UIKit, and IOS development increased exponentially this weekend, and in just one weekend we were able to bring our app’s vision to life. And to complement our technical growth, we learned a lot about scaling and expanding a product beyond the MVP, and we brainstormed lots of exciting new features for future development. We also learned a lot about user centric design, and focused on developing a fun, easy, and exciting to use app that maximized social impact and connectivity. 
 
 ## What's next for LinkUp
-Finding project partners is a task that all engineers and other creatives face. Even though hackathons were our initial inspiration, we want to scale our app to best serve all college students next. In this way we can help students get involved on their campus, especially during virtual times with projects and a community. Eventually, it would be awesome to offer this service to anyone who needs partners for a project. This would help people form connections and unlock the power of their collaborations.
+Finding project partners for hackathons was LinkUp’s initial inspiration, but we see a great potential in including all types of creators on our platform. The timeline for LinkUp’s expansion is as follows: 
+ 1. Partner matching for hackathons: Create a user friendly platform to eliminate hundreds of Slack introductory messages, and create a fun and gamified matching process. 
+ 2. Partner matching for all developers: Expand our app’s features to allow programmers to easily find partners for side projects, startup ideas, … you name it!
+ 3. Partner matching for all students: Diversify our user profiles and filters to allow all students to benefit from LinkUp. Through interviews with our friends in mechanical engineering and graphic design, we’ve found that students in other majors also struggle to find project partners.
+ 4. Partner matching for all creators: Open and market LinkUp to non-college students. This will enable everyone to form connections and unlock the power of their collaborations.
+
