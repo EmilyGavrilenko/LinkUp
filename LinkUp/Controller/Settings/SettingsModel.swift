@@ -15,33 +15,29 @@ class SettingsModel {
     var bindableImage = Bindable<UIImage>()
     var bindableIsFormValid = Bindable<Bool>()
     
-    var fullName: String? { didSet { checkFormValidity() } }
+    var name: String? { didSet { checkFormValidity() } }
     var committment: String? { didSet { checkFormValidity() } }
     var college: String? { didSet { checkFormValidity() } }
     var major: String? { didSet { checkFormValidity() } }
     var bio: String? { didSet { checkFormValidity() } }
     
-    var email: String? { didSet { checkFormValidity() } }
-    var password: String? { didSet { checkFormValidity() } }
-    
     func checkFormValidity() {
-        let isFormValid = fullName?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && bindableImage.value != nil
+        let isFormValid = name?.isEmpty == false
         bindableIsFormValid.value = isFormValid
     }
     
-    func performRegistration(completion: @escaping (Error?) -> ()) {
-        guard let email = email, let password = password else { return }
-        bindableIsRegistering.value = true
-        Auth.auth().createUser(withEmail: email, password: password) { (res, err) in
-            if let err = err {
-                completion(err)
-                return
-            }
-            
-            print("Successfully registered user:", res?.user.uid ?? "")
-            self.saveImageToFirebase(completion: completion)
-        }
-    }
+//    func performRegistration(completion: @escaping (Error?) -> ()) {
+//        bindableIsRegistering.value = true
+//        Auth.auth().createUser(withEmail: email, password: password) { (res, err) in
+//            if let err = err {
+//                completion(err)
+//                return
+//            }
+//
+//            print("Successfully registered user:", res?.user.uid ?? "")
+//            self.saveImageToFirebase(completion: completion)
+//        }
+//    }
     
     fileprivate func saveImageToFirebase(completion: @escaping (Error?) ->()) {
         let filename = UUID().uuidString
@@ -71,7 +67,7 @@ class SettingsModel {
     fileprivate func saveInfoToFirestore(imageUrl: String, completion: @escaping (Error?) -> ()) {
         let uid = Auth.auth().currentUser?.uid ?? ""
         let docData: [String : Any] = [
-            "fullName": fullName ?? "",
+            "fullName": name ?? "",
             "uid": uid,
             "imageUrl": imageUrl ?? "",
             "committment": committment ?? "",

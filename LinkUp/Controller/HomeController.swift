@@ -294,9 +294,15 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         present(userDetailsController, animated: true)
     }
     
+//    @objc func handleSettings() {
+//        let settingsController = SettingsController()
+//        settingsController.delegate = self
+//        let navController = UINavigationController(rootViewController: settingsController)
+//        present(navController, animated: true)
+//    }
+    
     @objc func handleSettings() {
-        let settingsController = SettingsController()
-        settingsController.delegate = self
+        let settingsController = TestController()
         let navController = UINavigationController(rootViewController: settingsController)
         present(navController, animated: true)
     }

@@ -26,6 +26,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     var delegate: SettingsControllerDelegate?
+    fileprivate let settingsModel = SettingsModel()
     
     // instance properties
     lazy var imageButton = createButton(selector: #selector(handleSelectPhoto))
@@ -171,25 +172,17 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         return section == 0 ? 0 : 1
     }
     
+    let emailTextField: CustomTextField = {
+        var tf = CustomTextField(padding: 24, height: 50)
+        tf.placeholder = "Enter Name"
+        tf.keyboardType = .default
+        tf.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
+        return tf
+    }()
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        // age range cell
-//        if indexPath.section == 5 {
-//            let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
-//            ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
-//            ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
-//            // we need to set up the labels on our cell here
-//            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
-//            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
-//
-//            ageRangeCell.minLabel.text = "Min \(minAge)"
-//            ageRangeCell.maxLabel.text = "Max \(maxAge)"
-//            ageRangeCell.minSlider.value = Float(minAge)
-//            ageRangeCell.maxSlider.value = Float(maxAge)
-//            return ageRangeCell
-//        }
-        
-        let cell = SettingsCell(style: .default, reuseIdentifier: nil)
+        var cell = SettingsCell(style: .default, reuseIdentifier: nil)
         
         switch indexPath.section {
         case 1:
@@ -218,7 +211,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     @objc fileprivate func handleNameChange(textField: UITextField) {
-        self.user?.name = textField.text
+        settingsModel.name = textField.text
     }
     
     @objc fileprivate func handleMajorChange(textField: UITextField) {
@@ -245,7 +238,32 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
             UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         ]
+        view.addSubview(verticalStackView)
     }
+    
+    let nameTextField: SettingsCell.SettingsTextField = {
+        let tf = SettingsCell.SettingsTextField()
+        tf.placeholder = "Enter Name"
+        tf.keyboardType = .default
+        tf.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
+        return tf
+    }()
+    let majorTextField: SettingsCell.SettingsTextField = {
+        let tf = SettingsCell.SettingsTextField()
+        tf.placeholder = "Enter major"
+        tf.addTarget(self, action: #selector(handleMajorChange), for: .editingChanged)
+        return tf
+    }()
+    
+    lazy var verticalStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [
+            nameTextField,
+            majorTextField,
+            ])
+        sv.axis = .vertical
+        sv.spacing = 12
+        return sv
+    }()
     
     @objc fileprivate func handleLogout() {
         do {
