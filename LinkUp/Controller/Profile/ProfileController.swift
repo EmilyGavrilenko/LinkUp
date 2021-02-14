@@ -1,5 +1,5 @@
 //
-//  SettingsController.swift
+//  ProfileController.swift
 //  LinkUp
 //
 //  Created by Emily Gavrilenko on 2/13/21.
@@ -9,73 +9,51 @@
 import UIKit
 import Firebase
 import JGProgressHUD
-import SDWebImage
 
-protocol SettingsControllerDelegate {
-    func didSaveSettings()
-}
-
-class CustomImagePickerController: UIImagePickerController {
-    var imageButton: UIButton?
-}
-
-class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let primaryColor = UIColor(named: "PrimaryColor")
     let tertiaryColor = UIColor(named: "TertiaryColor")
     let quadraryColor = UIColor(named: "QuadraryColor")
     
-<<<<<<< HEAD
-    var delegate: SettingsModel?
-=======
-    var delegate: SettingsControllerDelegate?
->>>>>>> 437dae43248132b82991a43b24913a0edb75b85c
-    fileprivate let settingsModel = SettingsViewModel()
+    fileprivate let userDetailsModel = ProfileModel()
     var user: User?
     
     fileprivate func fetchCurrentUser() {
-        let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Loading User Data"
-        hud.show(in: self.view)
-        
         Firestore.firestore().fetchCurrentUser { (user, err) in
             if let err = err {
                 print("Failed to fetch user:", err)
-                hud.dismiss()
                 return
             }
             self.user = user
-            self.loadUserPhoto()
-            self.settingsModel.fillValues(user: self.user!)
+            self.userDetailsModel.fillValues(user: self.user!)
             self.setupLayout()
-            hud.dismiss()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupNavigationItems()
         fetchCurrentUser()
         setupGradientLayer()
         setupTapGesture()
-        setupBindables()
+<<<<<<< HEAD:LinkUp/Controller/Test/UserInfoController.swift
     }
     
     fileprivate func setupLayout() {
-        view.addSubview(scrollView)
-        scrollView.addSubview(verticalStackView)
-        
-        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 120, left: 50, bottom: 50, right: 50))
-        //scrollView.isLayoutMarginsRelativeArrangement = true
+        navigationController?.isNavigationBarHidden = true
+        view.addSubview(verticalStackView)
+        view.addSubview(UIButton(title: "Hello", titleColor: .red))
+<<<<<<< HEAD
+        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
+        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+=======
+        //verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
         //verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+>>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
     }
     
     lazy var verticalStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
-            imageButton,
-            createLabel(name: "Name"),
-            getNameTextField(),
             createLabel(name: "College"),
             getCollegeTextField(),
             createLabel(name: "Hackathon"),
@@ -89,107 +67,42 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             saveButton,
             ])
         sv.axis = .vertical
-        sv.frame.size = contentViewSize
         sv.spacing = 12
         return sv
     }()
     
-    lazy var contentViewSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + 200) //Step One
-    
-    lazy var scrollView : UIScrollView = {
-        let view = UIScrollView(frame : .zero)
-        view.frame = self.view.bounds
-        //view.contentInsetAdjustmentBehavior = .never
-        view.contentSize = contentViewSize
-        return view
-    }()
-    
-    
-    fileprivate func setupNavigationItems() {
-            navigationItem.title = "Settings"
-            navigationController?.navigationBar.prefersLargeTitles = true
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
-            navigationItem.rightBarButtonItems = [
-                UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
-                UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
-            ]
-        }
-    
-    fileprivate func loadUserPhoto() {
-        if let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) {
-            SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
-                self.imageButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
-            }
-        }
-    }
-    
-    // instance properties
-    lazy var imageButton = createButton(selector: #selector(handleSelectPhoto))
-    
-    @objc func handleSelectPhoto(button: UIButton) {
-        print("Select photo with button:", button)
-        let imagePicker = CustomImagePickerController()
-        imagePicker.delegate = self
-        imagePicker.imageButton = button
-        present(imagePicker, animated: true)
-    }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let selectedImage = info[.originalImage] as? UIImage
-        // how do i set the image on my buttons when I select a photo?
-        let imageButton = (picker as? CustomImagePickerController)?.imageButton
-        imageButton?.setImage(selectedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
-        dismiss(animated: true)
-        
-        let filename = UUID().uuidString
-        let ref = Storage.storage().reference(withPath: "/images/\(filename)")
-        guard let uploadData = selectedImage?.jpegData(compressionQuality: 0.75) else { return }
+    @objc fileprivate func handleSave() {
+        print("Saving our settings data into Firestore")
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let docData: [String: Any] = [
+            "college": userDetailsModel.college ?? "",
+            "hackathon": userDetailsModel.hackathon ?? "",
+            "bio": userDetailsModel.bio ?? "",
+            "committment": userDetailsModel.committment ?? "",
+            "idea": userDetailsModel.idea ?? "",
+<<<<<<< HEAD
+=======
+            "createdProfile": true,
+>>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
+        ]
         
         let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Uploading image..."
+        hud.textLabel.text = "Saving Profile"
         hud.show(in: view)
-        ref.putData(uploadData, metadata: nil) { (nil, err) in
+        Firestore.firestore().collection("users").document(uid).setData(docData, merge: true) { (err) in
+            hud.dismiss()
             if let err = err {
-                hud.dismiss()
-                print("Failed to upload image to storage:", err)
+                print("Failed to save user settings:", err)
                 return
             }
-            
-            print("Finished uploading image")
-            ref.downloadURL(completion: { (url, err) in
-                
-                hud.dismiss()
-                
-                if let err = err {
-                    print("Failed to retrieve download URL:", err)
-                    return
-                }
-                
-                print("Finished getting download url:", url?.absoluteString ?? "")
-                
-                self.user?.imageUrl = url?.absoluteString
+        
+            self.dismiss(animated: true, completion: {
+                print("Dismissal complete")
             })
         }
-    }
-    
-    func createButton(selector: Selector) -> UIButton {
-        let button = UIButton(type: .system)
-        button.setTitle("Select Photo", for: .normal)
-        button.backgroundColor = .white
-        button.layer.cornerRadius = 8
-        button.addTarget(self, action: selector, for: .touchUpInside)
-        button.imageView?.contentMode = .scaleAspectFill
-        button.clipsToBounds = true
-        button.withHeight(300)
-        return button
-    }
-    
-    func getNameTextField() -> CustomTextField {
-        let tf = CustomTextField(padding: 24, height: 50)
-        tf.placeholder = "Enter Name"
-        tf.text = user?.name
-        tf.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
-        return tf
+=======
+        setupBindables()
+>>>>>>> 437dae43248132b82991a43b24913a0edb75b85c:LinkUp/Controller/Profile/ProfileController.swift
     }
     
     func getCollegeTextField() -> CustomTextField {
@@ -206,7 +119,14 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-        ideaPicker.selectRow(settingsModel.ideaRow ?? 0, inComponent: 0, animated: true)
+<<<<<<< HEAD:LinkUp/Controller/Test/UserInfoController.swift
+<<<<<<< HEAD
+        ideaPicker.selectRow(userDetailsModel.ideaRow ?? 0, inComponent: 0, animated: true)
+=======
+>>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
+=======
+        ideaPicker.selectRow(userDetailsModel.ideaRow ?? 0, inComponent: 0, animated: true)
+>>>>>>> 437dae43248132b82991a43b24913a0edb75b85c:LinkUp/Controller/Profile/ProfileController.swift
         ideaPicker.tag = 1
         return ideaPicker
     }
@@ -217,7 +137,14 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-        ideaPicker.selectRow(settingsModel.committmentRow ?? 0, inComponent: 0, animated: true)
+<<<<<<< HEAD:LinkUp/Controller/Test/UserInfoController.swift
+<<<<<<< HEAD
+        ideaPicker.selectRow(userDetailsModel.committmentRow ?? 0, inComponent: 0, animated: true)
+=======
+>>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
+=======
+        ideaPicker.selectRow(userDetailsModel.committmentRow ?? 0, inComponent: 0, animated: true)
+>>>>>>> 437dae43248132b82991a43b24913a0edb75b85c:LinkUp/Controller/Profile/ProfileController.swift
         ideaPicker.tag = 2
         return ideaPicker
     }
@@ -273,57 +200,57 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         return button
     }()
     
-    @objc fileprivate func handleNameChange(textField: UITextField) {
-        settingsModel.name = textField.text
-    }
+    lazy var verticalStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [
+            createLabel(name: "College"),
+            getCollegeTextField(),
+            createLabel(name: "Hackathon"),
+            getHackathonTextField(),
+            createLabel(name: "Bio"),
+            getBioTextField(),
+            createLabel(name: "Committment"),
+            getCommittmentPicker(),
+            createLabel(name: "Do you have an project idea?"),
+            getIdeaPicker(),
+            saveButton,
+            ])
+        sv.axis = .vertical
+        sv.spacing = 12
+        return sv
+    }()
+    
     @objc fileprivate func handleCollegeChange(textField: UITextField) {
-        settingsModel.college = textField.text
+        userDetailsModel.college = textField.text
     }
     @objc fileprivate func handleHackathonChange(textField: UITextField) {
-        settingsModel.hackathon = textField.text
+        userDetailsModel.hackathon = textField.text
     }
     @objc fileprivate func handleBioChange(textField: UITextField) {
-        settingsModel.bio = textField.text
+        userDetailsModel.bio = textField.text
     }
     @objc fileprivate func handleSkillChange(textField: UITextField) {
         print("Editing Skill")
     }
     
-    
-    @objc fileprivate func handleLogout() {
-        do {
-            try Auth.auth().signOut()
-            print("Logging out")
-            var loginDelegate: LoginControllerDelegate?
-            let loginController = LoginController()
-            loginController.delegate = loginDelegate
-            navigationController?.pushViewController(loginController, animated: true)
-        }
-        catch {
-            print("already logged out")
-        }
-    }
-    
     @objc fileprivate func handleSave() {
         print("Saving our settings data into Firestore")
-        print("Have idea \(settingsModel.idea)")
-        print("Committment \(settingsModel.committment)")
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let docData: [String: Any] = [
             "uid": uid,
-            "name": settingsModel.name ?? "",
-            "college": settingsModel.college ?? "",
-            "hackathon": settingsModel.hackathon ?? "",
-            "bio": settingsModel.bio ?? "",
-            "committment": settingsModel.committment ?? "",
-            "idea": settingsModel.idea ?? "",
+            "name": userDetailsModel.name ?? "",
+            "college": userDetailsModel.college ?? "",
+            "hackathon": userDetailsModel.hackathon ?? "",
+            "bio": userDetailsModel.bio ?? "",
+            "committment": userDetailsModel.committment ?? "",
+            "idea": userDetailsModel.idea ?? "",
             "imageUrl": user!.imageUrl ?? "",
+            "createdProfile": true,
         ]
         
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Saving settings"
         hud.show(in: view)
-        Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
+        Firestore.firestore().collection("users").document(uid).setData(docData, merge: true) { (err) in
             hud.dismiss()
             if let err = err {
                 print("Failed to save user settings:", err)
@@ -337,13 +264,9 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         }
     }
     
-    @objc fileprivate func handleCancel() {
-        dismiss(animated: true)
-    }
-    
     fileprivate func setupBindables() {
-        settingsModel.checkFormValidity()
-        settingsModel.isFormValid.bind { [unowned self] (isFormValid) in
+        userDetailsModel.checkFormValidity()
+        userDetailsModel.isFormValid.bind { [unowned self] (isFormValid) in
             guard let isFormValid = isFormValid else { return }
             self.saveButton.isEnabled = isFormValid
             self.saveButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
@@ -366,6 +289,13 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         gradientLayer.locations = [0, 1]
         view.layer.addSublayer(gradientLayer)
         gradientLayer.frame = view.bounds
+    }
+    
+    fileprivate func setupLayout() {
+        navigationController?.isNavigationBarHidden = true
+        view.addSubview(verticalStackView)
+        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
+        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     var pickerData1 = ["N/A", "Have an idea", "Looking for an idea"]
@@ -398,11 +328,11 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if pickerView.tag == 1 {
-            settingsModel.idea = pickerData1[row]
+            userDetailsModel.idea = pickerData1[row]
         }
         
         if pickerView.tag == 2 {
-            settingsModel.committment = pickerData2[row]
+            userDetailsModel.committment = pickerData2[row]
         }
     }
     

@@ -1,119 +1,47 @@
 //
-//  UserInfoController.swift
+//  ProfileController.swift
 //  LinkUp
 //
 //  Created by Emily Gavrilenko on 2/13/21.
 //  Copyright © 2021 Emily and Kira. All rights reserved.
 //
-
 import UIKit
 import Firebase
 import JGProgressHUD
 
-class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UINavigationControllerDelegate {
+class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let primaryColor = UIColor(named: "PrimaryColor")
     let tertiaryColor = UIColor(named: "TertiaryColor")
     let quadraryColor = UIColor(named: "QuadraryColor")
     
-    fileprivate let userDetailsModel = UserDetailsModel()
-    
+    fileprivate let userDetailsModel = ProfileModel()
     var user: User?
     
     fileprivate func fetchCurrentUser() {
-        let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Loading Data"
-        hud.show(in: self.view)
-        
         Firestore.firestore().fetchCurrentUser { (user, err) in
             if let err = err {
                 print("Failed to fetch user:", err)
-                hud.dismiss()
                 return
             }
-            print("Found user")
-            print(user!)
             self.user = user
+            self.userDetailsModel.fillValues(user: self.user!)
             self.setupLayout()
-            
-            hud.dismiss()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("Loading view")
         fetchCurrentUser()
         setupGradientLayer()
         setupTapGesture()
-    }
-    
-    fileprivate func setupLayout() {
-        navigationController?.isNavigationBarHidden = true
-        view.addSubview(verticalStackView)
-        view.addSubview(UIButton(title: "Hello", titleColor: .red))
-<<<<<<< HEAD
-        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-=======
-        //verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        //verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
-    }
-    
-    lazy var verticalStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [
-            createLabel(name: "College"),
-            getCollegeTextField(),
-            createLabel(name: "Hackathon"),
-            getHackathonTextField(),
-            createLabel(name: "Bio"),
-            getBioTextField(),
-            createLabel(name: "Committment"),
-            getCommittmentPicker(),
-            createLabel(name: "Do you have an project idea?"),
-            getIdeaPicker(),
-            saveButton,
-            ])
-        sv.axis = .vertical
-        sv.spacing = 12
-        return sv
-    }()
-    
-    @objc fileprivate func handleSave() {
-        print("Saving our settings data into Firestore")
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let docData: [String: Any] = [
-            "college": userDetailsModel.college ?? "",
-            "hackathon": userDetailsModel.hackathon ?? "",
-            "bio": userDetailsModel.bio ?? "",
-            "committment": userDetailsModel.committment ?? "",
-            "idea": userDetailsModel.idea ?? "",
-<<<<<<< HEAD
-=======
-            "createdProfile": true,
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
-        ]
-        
-        let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Saving Profile"
-        hud.show(in: view)
-        Firestore.firestore().collection("users").document(uid).setData(docData, merge: true) { (err) in
-            hud.dismiss()
-            if let err = err {
-                print("Failed to save user settings:", err)
-                return
-            }
-        
-            self.dismiss(animated: true, completion: {
-                print("Dismissal complete")
-            })
-        }
+        setupBindables()
     }
     
     func getCollegeTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
-        tf.placeholder = "Enter Name"
+        tf.placeholder = "Enter College"
+        tf.text = user?.college
         tf.addTarget(self, action: #selector(handleCollegeChange), for: .editingChanged)
         return tf
     }
@@ -124,10 +52,7 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-<<<<<<< HEAD
         ideaPicker.selectRow(userDetailsModel.ideaRow ?? 0, inComponent: 0, animated: true)
-=======
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
         ideaPicker.tag = 1
         return ideaPicker
     }
@@ -138,10 +63,7 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-<<<<<<< HEAD
         ideaPicker.selectRow(userDetailsModel.committmentRow ?? 0, inComponent: 0, animated: true)
-=======
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
         ideaPicker.tag = 2
         return ideaPicker
     }
@@ -149,6 +71,8 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     func getBioTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
         tf.placeholder = "Enter Bio"
+        tf.keyboardType = .alphabet
+        tf.text = user?.bio
         tf.addTarget(self, action: #selector(handleBioChange), for: .editingChanged)
         return tf
     }
@@ -156,6 +80,7 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     func getHackathonTextField() -> CustomTextField {
         let tf = CustomTextField(padding: 24, height: 50)
         tf.placeholder = "Enter Hackathon"
+        tf.text = user?.hackathon
         tf.addTarget(self, action: #selector(handleHackathonChange), for: .editingChanged)
         return tf
     }
@@ -194,6 +119,25 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         return button
     }()
     
+    lazy var verticalStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [
+            createLabel(name: "College"),
+            getCollegeTextField(),
+            createLabel(name: "Hackathon"),
+            getHackathonTextField(),
+            createLabel(name: "Bio"),
+            getBioTextField(),
+            createLabel(name: "Committment"),
+            getCommittmentPicker(),
+            createLabel(name: "Do you have an project idea?"),
+            getIdeaPicker(),
+            saveButton,
+            ])
+        sv.axis = .vertical
+        sv.spacing = 12
+        return sv
+    }()
+    
     @objc fileprivate func handleCollegeChange(textField: UITextField) {
         userDetailsModel.college = textField.text
     }
@@ -205,6 +149,48 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     }
     @objc fileprivate func handleSkillChange(textField: UITextField) {
         print("Editing Skill")
+    }
+    
+    @objc fileprivate func handleSave() {
+        print("Saving our settings data into Firestore")
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let docData: [String: Any] = [
+            "uid": uid,
+            "name": userDetailsModel.name ?? "",
+            "college": userDetailsModel.college ?? "",
+            "hackathon": userDetailsModel.hackathon ?? "",
+            "bio": userDetailsModel.bio ?? "",
+            "committment": userDetailsModel.committment ?? "",
+            "idea": userDetailsModel.idea ?? "",
+            "imageUrl": user!.imageUrl ?? "",
+            "createdProfile": true,
+        ]
+        
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Saving settings"
+        hud.show(in: view)
+        Firestore.firestore().collection("users").document(uid).setData(docData, merge: true) { (err) in
+            hud.dismiss()
+            if let err = err {
+                print("Failed to save user settings:", err)
+                return
+            }
+            
+            print("Finished saving user info")
+            self.dismiss(animated: true, completion: {
+                print("Dismissal complete")
+            })
+        }
+    }
+    
+    fileprivate func setupBindables() {
+        userDetailsModel.checkFormValidity()
+        userDetailsModel.isFormValid.bind { [unowned self] (isFormValid) in
+            guard let isFormValid = isFormValid else { return }
+            self.saveButton.isEnabled = isFormValid
+            self.saveButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
+            self.saveButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
+        }
     }
     
     let gradientLayer = CAGradientLayer()
@@ -222,6 +208,13 @@ class UserInfoController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         gradientLayer.locations = [0, 1]
         view.layer.addSublayer(gradientLayer)
         gradientLayer.frame = view.bounds
+    }
+    
+    fileprivate func setupLayout() {
+        navigationController?.isNavigationBarHidden = true
+        view.addSubview(verticalStackView)
+        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
+        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
     }
     
     var pickerData1 = ["N/A", "Have an idea", "Looking for an idea"]

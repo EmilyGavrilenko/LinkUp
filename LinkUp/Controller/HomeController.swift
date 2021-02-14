@@ -70,17 +70,14 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 return
             }
             self.user = user
-//            if (user!.createdProfile ?? false) == false {
-////                let userInfoController = UserInfoController()
-////                self.navigationController?.pushViewController(userInfoController, animated: true)
-//
-//                let settingsController = UserInfoController()
-//                let navController = UINavigationController(rootViewController: settingsController)
-//                self.present(navController, animated: true)
-//            }
-//            else {
+            if (user!.createdProfile ?? false) == false {
+                let profileController = ProfileController()
+                let navController = UINavigationController(rootViewController: profileController)
+                self.present(navController, animated: true)
+            }
+            else {
                 self.fetchSwipes()
-//            }
+            }
         }
     }
     
@@ -306,16 +303,9 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     @objc func handleSettings() {
         let settingsController = SettingsController()
-        //settingsController.delegate = self
         let navController = UINavigationController(rootViewController: settingsController)
         present(navController, animated: true)
     }
-    
-//    @objc func handleSettings() {
-//        let settingsController = UserInfoController()
-//        let navController = UINavigationController(rootViewController: settingsController)
-//        present(navController, animated: true)
-//    }
     
     func didSaveSettings() {
         print("Notified of dismissal from SettingsController in HomeController")
