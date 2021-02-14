@@ -7,6 +7,7 @@ Pods/
 Pods/
 LinkUp/GoogleService-Info.plist
 LinkUp.xcodeproj/project.pbxproj
+LinkUp.xcworkspace/xcuserdata/emilygavrilenko.xcuserdatad/UserInterfaceState.xcuserstate
 build/
 *.pbxuser
 !default.pbxuser
