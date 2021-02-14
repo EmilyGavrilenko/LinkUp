@@ -117,6 +117,8 @@ class RegistrationController: UIViewController {
                 self?.delegate?.didFinishLoggingIn()
             })
         }
+//        let userInfoController = UserInfoController()
+//        navigationController?.pushViewController(userInfoController, animated: true)
     }
     
     fileprivate func showHUDWithError(error: Error) {

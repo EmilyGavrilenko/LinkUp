@@ -27,7 +27,6 @@ class SettingsCell: UITableViewCell {
     
     let textField: UITextField = {
         let tf = SettingsTextField()
-        tf.placeholder = "Enter Name"
         return tf
     }()
     

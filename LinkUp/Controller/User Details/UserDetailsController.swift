@@ -39,7 +39,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     
     lazy var verticalStackView: UIStackView = {
          let sv = UIStackView(arrangedSubviews: [
-            swipingView, dismissButton, infoLabel
+            swipingView, dismissButton, scrollView
              ])
          sv.axis = .vertical
          sv.frame.size = contentViewSize
@@ -72,6 +72,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
         super.viewDidLoad()
         
         view.backgroundColor = .white
+        
         self.view.addSubview(scrollView)
         self.scrollView.addSubview(verticalStackView)
         
@@ -80,6 +81,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     
     
     @objc fileprivate func handleTapDismiss() {
+        print("test")
         self.dismiss(animated: true)
     }
     

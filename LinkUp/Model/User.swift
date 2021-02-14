@@ -16,6 +16,9 @@ struct User: ProducesCardViewModel {
     var major: String?
     var committment: String?
     var bio: String?
+    var idea: String?
+    var hackathon: String?
+    var skills: [String]?
     var imageUrl: String?
     var uid: String?
     
@@ -26,6 +29,11 @@ struct User: ProducesCardViewModel {
         self.major = dictionary["major"] as? String ?? ""
         self.committment = dictionary["committment"] as? String ?? ""
         self.bio = dictionary["bio"] as? String ?? ""
+        self.idea = dictionary["idea"] as? String
+        self.hackathon = dictionary["hackathon"] as? String ?? ""
+        self.skills = dictionary["skills"] as? [String]
+        self.major = dictionary["major"] as? String ?? ""
+        
         self.imageUrl = dictionary["imageUrl"] as? String ?? ""
         self.uid = dictionary["uid"] as? String ?? ""
     }

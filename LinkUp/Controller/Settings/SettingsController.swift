@@ -1,9 +1,9 @@
 //
 //  SettingsController.swift
-//  tinder-clone
+//  LinkUp
 //
-//  Created by yash Shelatkar on 7/8/19.
-//  Copyright © 2019 yash Shelatkar. All rights reserved.
+//  Created by Emily Gavrilenko on 2/13/21.
+//  Copyright © 2021 Emily and Kira. All rights reserved.
 //
 
 import UIKit
@@ -19,13 +19,105 @@ class CustomImagePickerController: UIImagePickerController {
     var imageButton: UIButton?
 }
 
-class SettingsController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    deinit {
-        print("Object is destroying itself properly, no retain cycles or any other memory related issues. Memory being reclaimed properly")
+    let primaryColor = UIColor(named: "PrimaryColor")
+    let tertiaryColor = UIColor(named: "TertiaryColor")
+    let quadraryColor = UIColor(named: "QuadraryColor")
+    
+    var delegate: SettingsModel?
+    fileprivate let settingsModel = SettingsViewModel()
+    var user: User?
+    
+    fileprivate func fetchCurrentUser() {
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Loading User Data"
+        hud.show(in: self.view)
+        
+        Firestore.firestore().fetchCurrentUser { (user, err) in
+            if let err = err {
+                print("Failed to fetch user:", err)
+                hud.dismiss()
+                return
+            }
+            self.user = user
+            self.loadUserPhoto()
+            self.settingsModel.fillValues(user: self.user!)
+            self.setupLayout()
+            hud.dismiss()
+        }
     }
     
-    var delegate: SettingsControllerDelegate?
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupNavigationItems()
+        fetchCurrentUser()
+        setupGradientLayer()
+        setupTapGesture()
+        setupBindables()
+    }
+    
+    fileprivate func setupLayout() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(verticalStackView)
+        
+        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 120, left: 50, bottom: 50, right: 50))
+        //scrollView.isLayoutMarginsRelativeArrangement = true
+        //verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    }
+    
+    lazy var verticalStackView: UIStackView = {
+        let sv = UIStackView(arrangedSubviews: [
+            imageButton,
+            createLabel(name: "Name"),
+            getNameTextField(),
+            createLabel(name: "College"),
+            getCollegeTextField(),
+            createLabel(name: "Hackathon"),
+            getHackathonTextField(),
+            createLabel(name: "Bio"),
+            getBioTextField(),
+            createLabel(name: "Committment"),
+            getCommittmentPicker(),
+            createLabel(name: "Do you have an project idea?"),
+            getIdeaPicker(),
+            saveButton,
+            ])
+        sv.axis = .vertical
+        sv.frame.size = contentViewSize
+        sv.spacing = 12
+        return sv
+    }()
+    
+    lazy var contentViewSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + 200) //Step One
+    
+    lazy var scrollView : UIScrollView = {
+        let view = UIScrollView(frame : .zero)
+        view.frame = self.view.bounds
+        //view.contentInsetAdjustmentBehavior = .never
+        view.contentSize = contentViewSize
+        return view
+    }()
+    
+    
+    fileprivate func setupNavigationItems() {
+            navigationItem.title = "Settings"
+            navigationController?.navigationBar.prefersLargeTitles = true
+            navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
+            navigationItem.rightBarButtonItems = [
+                UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
+                UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+            ]
+        }
+    
+    fileprivate func loadUserPhoto() {
+        if let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) {
+            SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
+                self.imageButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+            }
+        }
+    }
     
     // instance properties
     lazy var imageButton = createButton(selector: #selector(handleSelectPhoto))
@@ -84,168 +176,115 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         button.addTarget(self, action: selector, for: .touchUpInside)
         button.imageView?.contentMode = .scaleAspectFill
         button.clipsToBounds = true
+        button.withHeight(300)
         return button
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    func getNameTextField() -> CustomTextField {
+        let tf = CustomTextField(padding: 24, height: 50)
+        tf.placeholder = "Enter Name"
+        tf.text = user?.name
+        tf.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
+        return tf
+    }
+    
+    func getCollegeTextField() -> CustomTextField {
+        let tf = CustomTextField(padding: 24, height: 50)
+        tf.placeholder = "Enter Name"
+        tf.text = user?.college
+        tf.addTarget(self, action: #selector(handleCollegeChange), for: .editingChanged)
+        return tf
+    }
+    
+    func getIdeaPicker() -> UIPickerView {
+        let ideaPicker: UIPickerView = UIPickerView()
+        ideaPicker.delegate = self as UIPickerViewDelegate
+        ideaPicker.dataSource = self as UIPickerViewDataSource
+        ideaPicker.center = self.view.center
+        ideaPicker.withHeight(100)
+        ideaPicker.selectRow(settingsModel.ideaRow ?? 0, inComponent: 0, animated: true)
+        ideaPicker.tag = 1
+        return ideaPicker
+    }
+    
+    func getCommittmentPicker() -> UIPickerView {
+        let ideaPicker: UIPickerView = UIPickerView()
+        ideaPicker.delegate = self as UIPickerViewDelegate
+        ideaPicker.dataSource = self as UIPickerViewDataSource
+        ideaPicker.center = self.view.center
+        ideaPicker.withHeight(100)
+        ideaPicker.selectRow(settingsModel.committmentRow ?? 0, inComponent: 0, animated: true)
+        ideaPicker.tag = 2
+        return ideaPicker
+    }
+    
+    func getBioTextField() -> CustomTextField {
+        let tf = CustomTextField(padding: 24, height: 50)
+        tf.placeholder = "Enter Bio"
+        tf.keyboardType = .alphabet
+        tf.text = user?.bio
+        tf.addTarget(self, action: #selector(handleBioChange), for: .editingChanged)
+        return tf
+    }
+    
+    func getHackathonTextField() -> CustomTextField {
+        let tf = CustomTextField(padding: 24, height: 50)
+        tf.placeholder = "Enter Hackathon"
+        tf.text = user?.hackathon
+        tf.addTarget(self, action: #selector(handleHackathonChange), for: .editingChanged)
+        return tf
+    }
+    
+    func createLabel(name: String) -> UILabel {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height:15))
+        label.textAlignment = .left
+        label.text = name
+        return label
+    }
+    
+    func addSkill() {
+        saveButton.removeFromSuperview()
+        let skillView = UIStackView()
+        skillView.axis = .horizontal
+        let tf = CustomTextField(padding: 24, height: 50)
+        var myField: UITextField = UITextField (frame:CGRect(x: 10, y: 10, width: 30, height: 45));
+        tf.placeholder = "Enter Skill"
+        tf.addTarget(self, action: #selector(handleSkillChange), for: .editingChanged)
         
-        setupNavigationItems()
-        tableView.backgroundColor = UIColor(white: 0.95, alpha: 1)
-        tableView.tableFooterView = UIView()
-        tableView.keyboardDismissMode = .interactive
-        
-        fetchCurrentUser()
+//        self.addArrangedSubview(myField)
+//        stackView.addArrangedSubview(saveBtn)
+//        stackView.addArrangedSubview(error)
     }
     
-    var user: User?
-    
-    fileprivate func fetchCurrentUser() {
-        Firestore.firestore().fetchCurrentUser { (user, err) in
-            if let err = err {
-                print("Failed to fetch user:", err)
-                return
-            }
-            self.user = user
-            self.loadUserPhotos()
-            self.tableView.reloadData()
-        }
-    }
-    
-    fileprivate func loadUserPhotos() {
-        if let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) {
-            SDWebImageManager.shared().loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
-                self.imageButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
-            }
-        }
-    }
-    
-    lazy var header: UIView = {
-        let header = UIView()
-        header.addSubview(imageButton)
-        let padding: CGFloat = 16
-        imageButton.anchor(top: header.topAnchor, leading: header.leadingAnchor, bottom: header.bottomAnchor, trailing: nil, padding: .init(top: padding, left: padding, bottom: padding, right: 0))
-        imageButton.widthAnchor.constraint(equalTo: header.widthAnchor, multiplier: 0.45).isActive = true
-        return header
+    let saveButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Save", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
+        button.backgroundColor = UIColor(named: "QuadraryColor")
+        button.setTitleColor(.gray, for: .disabled)
+        button.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button.layer.cornerRadius = 16
+        button.addTarget(self, action: #selector(handleSave), for: .touchUpInside)
+        return button
     }()
     
-    class HeaderLabel: UILabel {
-        override func drawText(in rect: CGRect) {
-            super.drawText(in: rect.insetBy(dx: 16, dy: 0))
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0 {
-            return header
-        }
-        let headerLabel = HeaderLabel()
-        switch section {
-        case 1:
-            headerLabel.text = "Name"
-        case 2:
-            headerLabel.text = "College"
-        case 3:
-            headerLabel.text = "Major"
-        case 4:
-            headerLabel.text = "Committment"
-        default:
-            headerLabel.text = "Bio"
-        }
-        headerLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        return headerLabel
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section == 0 {
-            return 300
-        }
-        return 40
-    }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 6
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 0 : 1
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        // age range cell
-//        if indexPath.section == 5 {
-//            let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
-//            ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChange), for: .valueChanged)
-//            ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChange), for: .valueChanged)
-//            // we need to set up the labels on our cell here
-//            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
-//            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
-//
-//            ageRangeCell.minLabel.text = "Min \(minAge)"
-//            ageRangeCell.maxLabel.text = "Max \(maxAge)"
-//            ageRangeCell.minSlider.value = Float(minAge)
-//            ageRangeCell.maxSlider.value = Float(maxAge)
-//            return ageRangeCell
-//        }
-        
-        let cell = SettingsCell(style: .default, reuseIdentifier: nil)
-        
-        switch indexPath.section {
-        case 1:
-            cell.textField.placeholder = "Enter Name"
-            cell.textField.text = user?.name
-            cell.textField.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
-        case 2:
-            cell.textField.placeholder = "Enter College"
-            cell.textField.text = user?.college
-            cell.textField.addTarget(self, action: #selector(handleCollegeChange), for: .editingChanged)
-        case 3:
-            cell.textField.placeholder = "Enter Major"
-            cell.textField.text = user?.major
-            cell.textField.addTarget(self, action: #selector(handleMajorChange), for: .editingChanged)
-        case 4:
-            cell.textField.placeholder = "Enter committment"
-            cell.textField.text = user?.committment
-            cell.textField.addTarget(self, action: #selector(handleCommittmentChange), for: .editingChanged)
-        default:
-            cell.textField.placeholder = "Enter Bio"
-            cell.textField.text = user?.bio
-            cell.textField.addTarget(self, action: #selector(handleBioChange), for: .editingChanged)
-        }
-        
-        return cell
-    }
-    
     @objc fileprivate func handleNameChange(textField: UITextField) {
-        self.user?.name = textField.text
+        settingsModel.name = textField.text
     }
-    
-    @objc fileprivate func handleMajorChange(textField: UITextField) {
-        self.user?.major = textField.text
-    }
-    
-    @objc fileprivate func handleCommittmentChange(textField: UITextField) {
-        self.user?.committment = textField.text
-    }
-    
     @objc fileprivate func handleCollegeChange(textField: UITextField) {
-        self.user?.college = textField.text
+        settingsModel.college = textField.text
     }
-    
+    @objc fileprivate func handleHackathonChange(textField: UITextField) {
+        settingsModel.hackathon = textField.text
+    }
     @objc fileprivate func handleBioChange(textField: UITextField) {
-        self.user?.bio = textField.text
+        settingsModel.bio = textField.text
+    }
+    @objc fileprivate func handleSkillChange(textField: UITextField) {
+        print("Editing Skill")
     }
     
-    fileprivate func setupNavigationItems() {
-        navigationItem.title = "Settings"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(handleCancel))
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
-            UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
-        ]
-    }
     
     @objc fileprivate func handleLogout() {
         do {
@@ -258,22 +297,23 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         }
         catch {
             print("already logged out")
-            
         }
-        // dismiss(animated: true)
     }
     
     @objc fileprivate func handleSave() {
         print("Saving our settings data into Firestore")
+        print("Have idea \(settingsModel.idea)")
+        print("Committment \(settingsModel.committment)")
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let docData: [String: Any] = [
             "uid": uid,
-            "name": user?.name ?? "",
-            "college": user?.college ?? "",
-            "major": user?.major ?? "",
-            "committment": user?.committment ?? "",
-            "bio": user?.bio ?? -1,
-            "imageUrl": user?.imageUrl ?? "",
+            "name": settingsModel.name ?? "",
+            "college": settingsModel.college ?? "",
+            "hackathon": settingsModel.hackathon ?? "",
+            "bio": settingsModel.bio ?? "",
+            "committment": settingsModel.committment ?? "",
+            "idea": settingsModel.idea ?? "",
+            "imageUrl": user!.imageUrl ?? "",
         ]
         
         let hud = JGProgressHUD(style: .dark)
@@ -289,7 +329,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             print("Finished saving user info")
             self.dismiss(animated: true, completion: {
                 print("Dismissal complete")
-                self.delegate?.didSaveSettings()
             })
         }
     }
@@ -298,6 +337,77 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         dismiss(animated: true)
     }
     
+    fileprivate func setupBindables() {
+        settingsModel.checkFormValidity()
+        settingsModel.isFormValid.bind { [unowned self] (isFormValid) in
+            guard let isFormValid = isFormValid else { return }
+            self.saveButton.isEnabled = isFormValid
+            self.saveButton.backgroundColor = isFormValid ? quadraryColor : .lightGray
+            self.saveButton.setTitleColor(isFormValid ? .white : .gray, for: .normal)
+        }
+    }
+    
+    let gradientLayer = CAGradientLayer()
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        gradientLayer.frame = view.bounds
+    }
+    
+    fileprivate func setupGradientLayer() {
+        let topColor = primaryColor?.cgColor
+        let bottomColor = tertiaryColor?.cgColor
+        // make sure to user cgColor
+        gradientLayer.colors = [topColor, bottomColor]
+        gradientLayer.locations = [0, 1]
+        view.layer.addSublayer(gradientLayer)
+        gradientLayer.frame = view.bounds
+    }
+    
+    var pickerData1 = ["N/A", "Have an idea", "Looking for an idea"]
+    var pickerData2 = ["N/A", "Low", "Medium", "High"]
+    
+    // Number of columns of data
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    // The number of rows of data
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView.tag == 1 {
+                return pickerData1.count
+        }
+        else {
+            return pickerData2.count
+        }
+    }
+    
+    // The data to return fopr the row and component (column) that's being passed in
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView.tag == 1 {
+                return pickerData1[row]
+        }
+        else {
+            return pickerData2[row]
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        if pickerView.tag == 1 {
+            settingsModel.idea = pickerData1[row]
+        }
+        
+        if pickerView.tag == 2 {
+            settingsModel.committment = pickerData2[row]
+        }
+    }
+    
+    fileprivate func setupTapGesture() {
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTapDismiss)))
+    }
+    
+    @objc fileprivate func handleTapDismiss() {
+        self.view.endEditing(true) // dismisses keyboard
+    }
+    
 }
-
-
