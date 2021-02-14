@@ -25,11 +25,7 @@ class SettingsController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     let tertiaryColor = UIColor(named: "TertiaryColor")
     let quadraryColor = UIColor(named: "QuadraryColor")
     
-<<<<<<< HEAD
-    var delegate: SettingsModel?
-=======
     var delegate: SettingsControllerDelegate?
->>>>>>> 437dae43248132b82991a43b24913a0edb75b85c
     fileprivate let settingsModel = SettingsViewModel()
     var user: User?
     

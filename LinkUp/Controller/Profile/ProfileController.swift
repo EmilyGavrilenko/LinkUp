@@ -5,7 +5,6 @@
 //  Created by Emily Gavrilenko on 2/13/21.
 //  Copyright © 2021 Emily and Kira. All rights reserved.
 //
-
 import UIKit
 import Firebase
 import JGProgressHUD
@@ -36,73 +35,7 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
         fetchCurrentUser()
         setupGradientLayer()
         setupTapGesture()
-<<<<<<< HEAD:LinkUp/Controller/Test/UserInfoController.swift
-    }
-    
-    fileprivate func setupLayout() {
-        navigationController?.isNavigationBarHidden = true
-        view.addSubview(verticalStackView)
-        view.addSubview(UIButton(title: "Hello", titleColor: .red))
-<<<<<<< HEAD
-        verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-=======
-        //verticalStackView.anchor(top: nil, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: 0, left: 50, bottom: 0, right: 50))
-        //verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
-    }
-    
-    lazy var verticalStackView: UIStackView = {
-        let sv = UIStackView(arrangedSubviews: [
-            createLabel(name: "College"),
-            getCollegeTextField(),
-            createLabel(name: "Hackathon"),
-            getHackathonTextField(),
-            createLabel(name: "Bio"),
-            getBioTextField(),
-            createLabel(name: "Committment"),
-            getCommittmentPicker(),
-            createLabel(name: "Do you have an project idea?"),
-            getIdeaPicker(),
-            saveButton,
-            ])
-        sv.axis = .vertical
-        sv.spacing = 12
-        return sv
-    }()
-    
-    @objc fileprivate func handleSave() {
-        print("Saving our settings data into Firestore")
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let docData: [String: Any] = [
-            "college": userDetailsModel.college ?? "",
-            "hackathon": userDetailsModel.hackathon ?? "",
-            "bio": userDetailsModel.bio ?? "",
-            "committment": userDetailsModel.committment ?? "",
-            "idea": userDetailsModel.idea ?? "",
-<<<<<<< HEAD
-=======
-            "createdProfile": true,
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
-        ]
-        
-        let hud = JGProgressHUD(style: .dark)
-        hud.textLabel.text = "Saving Profile"
-        hud.show(in: view)
-        Firestore.firestore().collection("users").document(uid).setData(docData, merge: true) { (err) in
-            hud.dismiss()
-            if let err = err {
-                print("Failed to save user settings:", err)
-                return
-            }
-        
-            self.dismiss(animated: true, completion: {
-                print("Dismissal complete")
-            })
-        }
-=======
         setupBindables()
->>>>>>> 437dae43248132b82991a43b24913a0edb75b85c:LinkUp/Controller/Profile/ProfileController.swift
     }
     
     func getCollegeTextField() -> CustomTextField {
@@ -119,14 +52,7 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-<<<<<<< HEAD:LinkUp/Controller/Test/UserInfoController.swift
-<<<<<<< HEAD
         ideaPicker.selectRow(userDetailsModel.ideaRow ?? 0, inComponent: 0, animated: true)
-=======
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
-=======
-        ideaPicker.selectRow(userDetailsModel.ideaRow ?? 0, inComponent: 0, animated: true)
->>>>>>> 437dae43248132b82991a43b24913a0edb75b85c:LinkUp/Controller/Profile/ProfileController.swift
         ideaPicker.tag = 1
         return ideaPicker
     }
@@ -137,14 +63,7 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
         ideaPicker.dataSource = self as UIPickerViewDataSource
         ideaPicker.center = self.view.center
         ideaPicker.withHeight(100)
-<<<<<<< HEAD:LinkUp/Controller/Test/UserInfoController.swift
-<<<<<<< HEAD
         ideaPicker.selectRow(userDetailsModel.committmentRow ?? 0, inComponent: 0, animated: true)
-=======
->>>>>>> 66e710bd714c19218e7165b531748302a785dcc3
-=======
-        ideaPicker.selectRow(userDetailsModel.committmentRow ?? 0, inComponent: 0, animated: true)
->>>>>>> 437dae43248132b82991a43b24913a0edb75b85c:LinkUp/Controller/Profile/ProfileController.swift
         ideaPicker.tag = 2
         return ideaPicker
     }
