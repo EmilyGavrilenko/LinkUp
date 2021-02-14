@@ -1,10 +1,11 @@
 //
 //  KeepSwipingButton.swift
-//  tinder-clone
+//  LinkUp
 //
-//  Created by yash Shelatkar on 19/8/19.
-//  Copyright © 2019 yash Shelatkar. All rights reserved.
+//  Created by Emily Gavrilenko on 2/13/21.
+//  Copyright © 2021 Emily and Kira. All rights reserved.
 //
+
 
 import UIKit
 

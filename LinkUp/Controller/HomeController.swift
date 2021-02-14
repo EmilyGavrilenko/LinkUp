@@ -1,9 +1,9 @@
 //
 //  ViewController.swift
-//  tinder-clone
+//  LinkUp
 //
-//  Created by yash Shelatkar on 25/7/19.
-//  Copyright © 2019 yash Shelatkar. All rights reserved.
+//  Created by Emily Gavrilenko on 2/13/21.
+//  Copyright © 2021 Emily and Kira. All rights reserved.
 //
 
 import UIKit
@@ -181,6 +181,7 @@ class HomeController: UIViewController, ProfileControllerDelegate, FilterControl
                 let user = User(dictionary: userDictionary)
                 
                 self.users[user.uid ?? ""] = user
+                print(user)
                 
                 let isNotCurrentUser = user.uid != Auth.auth().currentUser?.uid
                 //                let hasNotSwipedBefore = self.swipes[user.uid!] == nil
