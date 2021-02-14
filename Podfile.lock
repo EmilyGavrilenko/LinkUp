@@ -114,7 +114,7 @@ PODS:
   - gRPC/Main (1.21.0):
     - gRPC-Core (= 1.21.0)
     - gRPC-RxLibrary (= 1.21.0)
-  - GTMSessionFetcher/Core (1.5.0)
+  - GTMSessionFetcher/Core (1.4.0)
   - JGProgressHUD (2.0.4)
   - LBTATools (1.0.12)
   - leveldb-library (1.22)
@@ -123,7 +123,7 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
-  - Protobuf (3.14.0)
+  - Protobuf (3.12.0)
   - SDWebImage (4.4.8):
     - SDWebImage/Core (= 4.4.8)
   - SDWebImage/Core (4.4.8)
@@ -181,14 +181,14 @@ SPEC CHECKSUMS:
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   gRPC-ProtoRPC: fea7d2bb51ddd0ae6b5c5ea27033018f564084d0
   gRPC-RxLibrary: b0eb67f4f0f4c9cdfa6a73ea2b435a3efa77f1ef
-  GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
+  GTMSessionFetcher: 6f5c8abbab8a9bce4bb3f057e317728ec6182b10
   JGProgressHUD: 62658b14e72cccf179efc7a13bcb54d30b92fc22
   LBTATools: 389a901a01b9a56bea5682c40cd6e23530f40015
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
+  Protobuf: 2793fcd0622a00b546c60e7cbbcc493e043e9bb9
   SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
 
 PODFILE CHECKSUM: 5e52c42737848310a6b768901e3f15f60b21b9c7
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.9.3
