@@ -28,8 +28,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         topStackView.messageButton.addTarget(self, action: #selector(handleMessages), for: .touchUpInside)
         
         bottomControls.refreshButton.addTarget(self, action: #selector(handleRefresh), for: .touchUpInside)
-        bottomControls.likeButton.addTarget(self, action: #selector(handleLike), for: .touchUpInside)
-        bottomControls.dislikeButton.addTarget(self, action: #selector(handleDislike), for: .touchUpInside)
+        bottomControls.moreInfoButton.addTarget(self, action: #selector(handleMoreInfo), for: .touchUpInside)
         
         setupLayout()
         fetchCurrentUser()
@@ -97,6 +96,10 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     @objc fileprivate func handleRefresh() {
         cardsDeckView.subviews.forEach({$0.removeFromSuperview()})
         fetchUsersFromFirestore()
+    }
+    
+    @objc fileprivate func handleMoreInfo() {
+        didTapMoreInfo(cardViewModel: (topCardView?.cardViewModel)!)
     }
     
     var lastFetchedUser: User?

@@ -19,41 +19,12 @@ class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSou
             
             setViewControllers([controllers.first!], direction: .forward, animated: false)
             
-            setupBarViews()
         }
     }
     
-    fileprivate let barsStackView = UIStackView(arrangedSubviews: [])
-    fileprivate let deselectedBarColor = UIColor(white: 0, alpha: 0.1)
-    
-    fileprivate func setupBarViews() {
-        cardViewModel.imageUrls.forEach { (_) in
-            let barView = UIView()
-            barView.backgroundColor = deselectedBarColor
-            barView.layer.cornerRadius = 2
-            barsStackView.addArrangedSubview(barView)
-        }
-        barsStackView.arrangedSubviews.first?.backgroundColor = .white
-        barsStackView.spacing = 4
-        barsStackView.distribution = .fillEqually
-        
-        view.addSubview(barsStackView)
-        
-        var paddingTop: CGFloat = 8
-        if !isCardViewMode {
-            paddingTop += UIApplication.shared.statusBarFrame.height
-        }
-        //        let paddingTop = UIApplication.shared.statusBarFrame.height + 8
-        
-        barsStackView.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, padding: .init(top: paddingTop, left: 8, bottom: 0, right: 8), size: .init(width: 0, height: 4))
-    }
     
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         let currentPhotoController = viewControllers?.first
-        if let index = controllers.firstIndex(where: {$0 == currentPhotoController}) {
-            barsStackView.arrangedSubviews.forEach({$0.backgroundColor = deselectedBarColor})
-            barsStackView.arrangedSubviews[index].backgroundColor = .white
-        }
     }
     
     var controllers = [UIViewController]() // blank array
@@ -87,19 +58,16 @@ class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSou
         let currentController = viewControllers!.first!
         if let index = controllers.firstIndex(of: currentController) {
             
-            barsStackView.arrangedSubviews.forEach({$0.backgroundColor = deselectedBarColor})
             
             if gesture.location(in: self.view).x > view.frame.width / 2 {
                 let nextIndex = min(index + 1, controllers.count - 1)
                 let nextController = controllers[nextIndex]
                 setViewControllers([nextController], direction: .forward, animated: false)
-                barsStackView.arrangedSubviews[nextIndex].backgroundColor = .white
                 
             } else {
                 let prevIndex = max(0, index - 1)
                 let prevController = controllers[prevIndex]
                 setViewControllers([prevController], direction: .forward, animated: false)
-                barsStackView.arrangedSubviews[prevIndex].backgroundColor = .white
             }
         }
     }
