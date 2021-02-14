@@ -1,4 +1,7 @@
 # **LinkUp**
+
+#### **Tired of endlessly scrolling through Slack to find hackathon partners? Ready to start a company but need a Wozniak to your Steve Jobs? Then it's time to LinkUp, and make the world a better place!**
+
 This project was created as a submission for Stanford Treehacks 2021.
 
 ## Inspiration
