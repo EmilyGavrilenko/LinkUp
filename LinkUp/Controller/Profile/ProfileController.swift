@@ -11,7 +11,7 @@ import Firebase
 import JGProgressHUD
 
 protocol ProfileControllerDelegate {
-    func getFilters()
+    func didSaveSettings()
 }
 
 class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
@@ -97,6 +97,15 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
         return label
     }
     
+    func createPageLabel(name: String) -> UILabel {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 200, height:40))
+        label.textAlignment = .left
+        label.textColor = .black
+        label.font = UIFont.boldSystemFont(ofSize: 40.0)
+        label.text = name
+        return label
+    }
+    
     func addSkill() {
         saveButton.removeFromSuperview()
         let skillView = UIStackView()
@@ -126,6 +135,7 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
     
     lazy var verticalStackView: UIStackView = {
         let sv = UIStackView(arrangedSubviews: [
+            createPageLabel(name: "Profile:"),
             createLabel(name: "College"),
             getCollegeTextField(),
             createLabel(name: "Hackathon"),
@@ -178,11 +188,10 @@ class ProfileController: UIViewController, UIPickerViewDelegate, UIPickerViewDat
                 print("Failed to save user settings:", err)
                 return
             }
-            
             print("Finished saving user info")
             
             self.dismiss(animated: true, completion: {
-                self.delegate?.getFilters()
+                self.delegate?.didSaveSettings()
             })
         }
     }

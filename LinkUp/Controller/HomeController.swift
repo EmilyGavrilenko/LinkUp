@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate {
+class HomeController: UIViewController, ProfileControllerDelegate, FilterControllerDelegate, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate {
     
     let topStackView = TopNavigationStackView()
     let cardsDeckView = UIView()
@@ -63,7 +63,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     fileprivate func fetchCurrentUser() {
         hud.textLabel.text = "Loading"
         hud.show(in: view)
-        cardsDeckView.subviews.forEach({$0.removeFromSuperview()})
+        print("Fetching current user")
         Firestore.firestore().fetchCurrentUser { (user, err) in
             if let err = err {
                 print("Failed to fetch user:", err)
@@ -71,16 +71,24 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 return
             }
             self.user = user
+            print("Got user")
             if (user!.createdProfile ?? false) == false {
-                let profileController = ProfileController()
-                let navController = UINavigationController(rootViewController: profileController)
-                self.present(navController, animated: true)
+                self.handleProfile()
             }
             else {
-                self.fetchSwipes()
+                print("Going to get filters")
+                self.getFilters()
             }
         }
     }
+    
+    @objc func handleProfile() {
+        let profileController = ProfileController()
+        profileController.delegate = self
+        let navController = UINavigationController(rootViewController: profileController)
+        present(navController, animated: true)
+    }
+    
     
     var swipes = [String: Int]()
     
@@ -99,8 +107,10 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     }
     
     func getFilters() {
+        cardsDeckView.subviews.forEach({$0.removeFromSuperview()})
         guard let uid = Auth.auth().currentUser?.uid else { return }
         Firestore.firestore().collection("filters").document(uid).getDocument { (snapshot, err) in
+            print("Inside get document")
             if let err = err {
                 print("failed to fetch filters for currently logged in user:", err)
                 return
@@ -125,30 +135,32 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     @objc fileprivate func handleFilter() {
         let filterController = FilterController()
-        present(filterController, animated: true)
+        filterController.delegate = self
+        let navController = UINavigationController(rootViewController: filterController)
+        present(navController, animated: true)
     }
     
     var lastFetchedUser: User?
     
     fileprivate func fetchUsersFromFirestore() {
         let db = Firestore.firestore()
-        var query = db.collection("users").limit(to: 20).whereField("committment", isEqualTo: "High")
-//        if (filters?.college ?? "") != "" {
-//            print("Quering by college \(filters?.college)")
-//            query = query.whereField("college", isEqualTo: filters?.college)
-//        }
-//        if (filters?.hackathon ?? "") != "" {
-//            print("Quering by hackathon \(filters?.hackathon)")
-//            query = query.whereField("hackathon", isEqualTo: filters?.hackathon)
-//        }
-//        if (filters?.committment ?? "") != "" {
-//            print("Quering by committment \(filters?.committment)")
-//            query = query.whereField("committment", isEqualTo: filters?.committment)
-//        }
-//        if (filters?.idea ?? "") != "" {
-//            print("Quering by idea \(filters?.idea)")
-//            query = query.whereField("idea", isEqualTo: filters?.idea)
-//        }
+        var query = db.collection("users").limit(to: 20)
+        if (filters?.college ?? "") != "" {
+            print("Quering by college \(filters?.college)")
+            query = query.whereField("college", isEqualTo: filters?.college)
+        }
+        if (filters?.hackathon ?? "") != "" {
+            print("Quering by hackathon \(filters?.hackathon)")
+            query = query.whereField("hackathon", isEqualTo: filters?.hackathon)
+        }
+        if (filters?.committment ?? "") != "" {
+            print("Quering by committment \(filters?.committment)")
+            query = query.whereField("committment", isEqualTo: filters?.committment)
+        }
+        if (filters?.idea ?? "") != "" {
+            print("Quering by idea \(filters?.idea)")
+            query = query.whereField("idea", isEqualTo: filters?.idea)
+        }
         
         topCardView = nil
         query.getDocuments { (snapshot, err) in

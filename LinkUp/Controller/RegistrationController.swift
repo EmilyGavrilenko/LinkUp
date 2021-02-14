@@ -112,10 +112,15 @@ class RegistrationController: UIViewController {
                 return
             }
             print("Finished registering our user")
-            self?.dismiss(animated: true, completion: {
-                self?.delegate?.didFinishLoggingIn()
-            })
+            
+//            self?.dismiss(animated: true, completion: {
+//                self?.delegate?.didFinishLoggingIn()
+//            })
+            
         }
+        
+        let profileController = ProfileController()
+        self.present(profileController, animated: true)
     }
     
     fileprivate func showHUDWithError(error: Error) {
